@@ -1,0 +1,12 @@
+server:
+  port: 9003
+
+spring:
+  application:
+    name: AUTH-SERVER
+  cloud:
+    config:
+      enabled: true
+      uri: http://localhost:9296
+  zipkin:
+    base-url: http://127.0.0.1:9411/
