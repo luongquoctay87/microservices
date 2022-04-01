@@ -30,6 +30,15 @@ spring:
               args:
                 name: DEPARTMENT-SERVICE
                 fallbackuri: forward:/departmentServiceFallBack
+        - id: COMMENT-SERVICE
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/comments/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: COMMENT-SERVICE
+                fallbackuri: forward:/commentServiceFallBack
 
 hystrix:
   command:
