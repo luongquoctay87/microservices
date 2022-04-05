@@ -13,5 +13,4 @@ public class HistoryDto {
     @NotNull(message = "không được để trống")
     @Positive
     private Long userId;
-    private String actions;
 }

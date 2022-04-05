@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface HistoryService {
     List<HistoryForm> findByTaskId(Long id);
-    History save(HistoryDto historyDto);
+    History save(History history);
     History convertDtoToHistory(HistoryDto historyDto);
     HistoryForm convertHistoryToForm(History history);
+    String findNameByUserId(Long userId);
 }

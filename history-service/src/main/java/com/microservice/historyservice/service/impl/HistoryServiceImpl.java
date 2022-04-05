@@ -29,13 +29,15 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public History save(HistoryDto historyDto) {
-        return null;
+    public History save(History history) {
+        return historyRepository.save(history);
     }
 
     @Override
     public History convertDtoToHistory(HistoryDto historyDto) {
-        History history = modelMapper.map(historyDto, History.class);
+        History history = new History();
+        history.setUserId(historyDto.getUserId());
+        history.setTaskId(historyDto.getTaskId());
         return history;
     }
 
@@ -48,6 +50,11 @@ public class HistoryServiceImpl implements HistoryService {
         String date = simpleDateFormat.format(history.getCreatedDate());
         historyForm.setCreatedDate(date);
         return historyForm;
+    }
+
+    @Override
+    public String findNameByUserId(Long userId) {
+        return historyRepository.findNameByUserId(userId);
     }
 
 }
