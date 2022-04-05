@@ -39,6 +39,15 @@ spring:
               args:
                 name: COMMENT-SERVICE
                 fallbackuri: forward:/commentServiceFallBack
+        - id: HISTORY-SERVICE
+          uri: lb://HISTORY-SERVICE
+          predicates:
+            - Path=/histories/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: HISTORY-SERVICE
+                fallbackuri: forward:/historyServiceFallBack
 
 
 hystrix:
