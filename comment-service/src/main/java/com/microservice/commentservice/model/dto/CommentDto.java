@@ -1,27 +1,24 @@
 package com.microservice.commentservice.model.dto;
-import com.sun.istack.NotNull;
 import lombok.Data;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 public class CommentDto implements Serializable {
-    @NotNull
-    @Positive
+    @NotEmpty(message = "không được để trống")
+    @Positive(message = "là số nguyên dương")
     private Long userId;
-    @NotNull
-    @Positive
+
+    @NotEmpty(message = "không được để trống")
+    @Positive(message = "là số nguyên dương")
     private Long taskId;
-    @Positive
+
+    @Positive(message = "là số nguyên dương")
     private Long replyId;
-    @NotNull
-    @Size(max = 30)
+
+    @NotEmpty(message = "không được để trống")
     private String content;
-    private Date createdDate;
-    private Date updatedDate;
+
     private String img;
 }
