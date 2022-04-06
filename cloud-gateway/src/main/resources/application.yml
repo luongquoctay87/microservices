@@ -12,15 +12,6 @@ spring:
       uri: http://localhost:9296
     gateway:
       routes:
-        - id: USER-SERVICE
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: USER-SERVICE
-                fallbackuri: forward:/userServiceFallBack
         - id: DEPARTMENT-SERVICE
           uri: lb://DEPARTMENT-SERVICE
           predicates:
@@ -30,7 +21,19 @@ spring:
               args:
                 name: DEPARTMENT-SERVICE
                 fallbackuri: forward:/departmentServiceFallBack
-
+        - id: CORE-SERVICE
+          uri: lb://CORE-SERVICE
+          predicates:
+            - Path=/users/**
+            - Path=/tasks/**
+            - Path=/projects/**
+            - Path=/sections/**
+            - Path=/teams/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: CORE-SERVICE
+                fallbackuri: forward:/coreServiceFallBack
 hystrix:
   command:
     fallbackcmd:

@@ -2,7 +2,9 @@ package com.microservice.authserver.controller;
 
 import com.google.gson.Gson;
 import com.microservice.authserver.entity.Activity;
+import com.microservice.authserver.entity.Result;
 import com.microservice.authserver.entity.Token;
+import com.microservice.authserver.entity.User;
 import com.microservice.authserver.service.TokenService;
 import com.microservice.authserver.service.UserService;
 import com.microservice.authserver.utils.JwtUtil;
@@ -10,6 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +42,8 @@ public class AuthRestController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestParam("username") String _userName, @RequestParam("password") String _password) {
         log.info("Request POST /auth/login");
-        if (userService.isAuthenticated(_userName, _password)) {
+        User user = userService.isAuthenticated(_userName, _password);
+        if (!ObjectUtils.isEmpty(user)) {
             String roles = userService.findAllRolesByUsername(_userName).stream()
                     .map(Object::toString)
                     .collect(Collectors.joining(","));
@@ -47,8 +56,12 @@ public class AuthRestController {
                 APIs.add(String.format(String.format("%s %s",acc.getMethod().toUpperCase(), acc.getUrl())));
             });
 
+            Result result = Result.builder()
+                    .userId(user.getId())
+                    .activities(APIs)
+                    .build();
             // save token to redis
-            tokenService.saveToken(token.getToken(), APIs);
+            tokenService.saveToken(token.getToken(), result);
 
             log.info("Log in successful");
             return new ResponseEntity<>(token, HttpStatus.OK);
@@ -56,4 +69,7 @@ public class AuthRestController {
         log.info("Log in fail !!");
         return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
+
+
+
 }

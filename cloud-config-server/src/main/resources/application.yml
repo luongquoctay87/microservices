@@ -9,3 +9,4 @@ spring:
       server:
         git:
           uri: https://github.com/luongquoctay87/cloud-config-server
+          default-label: master

@@ -24,11 +24,14 @@ public class UserService {
      * @param password
      * @return
      */
-    public boolean isAuthenticated(String username, String password) {
-        User user = userRepository.findByUsername(username);
-        return encoder.matches(password, user.getPassword());
-    }
+//    public boolean isAuthenticated(String username, String password) {
+//        User user = userRepository.findByUsername(username);
+//        return encoder.matches(password, user.getPassword());
+//    }
 
+    public User isAuthenticated(String username, String password) {
+        return userRepository.findByUsername(username);
+    }
     /**
      * Get all roles by username
      * @param username

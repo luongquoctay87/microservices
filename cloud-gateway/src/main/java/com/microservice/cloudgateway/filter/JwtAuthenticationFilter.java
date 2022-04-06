@@ -53,7 +53,9 @@ public class JwtAuthenticationFilter implements GatewayFilter {
                 return error(response, HttpStatus.UNAUTHORIZED, "User is unauthenticated", url);
             }
 
-            // get token and remove character "Bearer "
+            // get token and remove character "Bea
+            //
+            // rer "
             final String token = request.getHeaders().getOrEmpty("Authorization").get(0).substring(7);
 
             // validate token and authenticate
