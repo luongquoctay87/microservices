@@ -32,7 +32,7 @@ public class FileLinkController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> edit(@PathVariable("id") Long _id, @RequestBody FileLink _fileLink){
+    public ResponseEntity<Void> edit(@PathVariable("id") Long _id, @RequestBody @Valid FileLink _fileLink){
         if(fileLinkService.edit(_id,_fileLink) == false){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

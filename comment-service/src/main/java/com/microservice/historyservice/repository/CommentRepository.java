@@ -9,9 +9,9 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends PagingAndSortingRepository<Comment,Long> {
-    @Query(value = "SELECT * FROM pa_task_management.pa_comments where task_id = :id ORDER BY  id DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM pa_task_management.pa_comments where task_id = :id  AND enabled = 0 ORDER BY  id DESC", nativeQuery = true)
     List<Comment> findAllByTaskId(Long id);
 
-    @Query(value = "SELECT * FROM pa_task_management.pa_comments where reply_id = :id ORDER BY  id DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM pa_task_management.pa_comments where reply_id = :id AND enabled = 0 ORDER BY  id DESC", nativeQuery = true)
     List<Comment> findAllByReplyId(Long replyId);
 }
