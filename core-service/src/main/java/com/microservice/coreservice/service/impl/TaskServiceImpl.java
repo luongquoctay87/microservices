@@ -60,6 +60,321 @@ public class TaskServiceImpl implements TaskService {
     private EntityManager entityManager;
 
     @Override
+    public PageResponse<TaskSearchReponse> search(int page,
+                                                  int pageSize,
+                                                  TaskSearchForm request) {
+        log.info("TaskService -> search");
+
+        List<TaskSearchReponse> taskSearchResponseList = new ArrayList<>();
+
+        String nativeQuery = "SELECT" +
+                "t.id," +
+                "t.name as taskName," +
+                "t.created_by," +
+                "t.project_id," +
+                "t.section_id," +
+                "t.description,\n" +
+                "t.priority," +
+                "t.status," +
+                "t.estimate_time," +
+                "t.start_date," +
+                "t.end_date," +
+                "t.parent_id," +
+                "t.created_date," +
+                "t.updated_date," +
+                "p.name as projectName," +
+                "s.name as sectionName," +
+                "u.username\n" +
+                "FROM pa_tasks t " +
+                "JOIN pa_projects p ON t.project_id = p.id\n" +
+                "JOIN pa_sections s ON t.section_id = s.id\n" +
+                "JOIN pa_users u ON t.assignee = u.id\n" +
+                "WHERE p.id = (?1) AND s.id = (?2)";
+
+        Query query = entityManager.createNativeQuery(nativeQuery)
+                .setFirstResult((page - 1) * pageSize)
+                .setMaxResults(pageSize)
+                .setParameter(1, request.getProject_id())
+                .setParameter(2, request.getSection_id());
+
+        // Trường hợp request gửi lên không null textsearch
+        if (request.getTextSearch() != null && request.getTextSearch().trim().length() > 0) {
+
+            nativeQuery += "AND t.name LIKE CONCAT('%','" + request.getTextSearch() + "', '%')";
+
+            // Trường hợp người dùng tìm kiếm kèm lọc kết quả theo điều kiện
+            if (request.getSortProperty() == null && request.getSortOrder() == null && request.getFilterBy() != null) {
+                searchByTextSearchAndFilter(nativeQuery, request, query);
+            }
+
+            // Trường hợp người dùng tìm kiếm kèm sắp xếp theo điều kiện
+            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() == null) {
+                searchByTextSearchAndSort(nativeQuery, request);
+            }
+
+            //   Trường hợp người dùng tìm kiếm kèm sắp xếp và lọc kết quả theo điều kiện
+            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() != null) {
+                searchByTextSearchAndFilter(nativeQuery, request, query);
+                searchByTextSearchAndSort(nativeQuery, request);
+            }
+
+            // Trường hợp request gửi lên  null textsearch
+        } else {
+
+//           Trường hợp người dùng lọc kết quả theo điều kiện
+            if (request.getSortProperty() == null && request.getSortOrder() == null && request.getFilterBy() != null) {
+                searchByTextSearchAndFilter(nativeQuery, request, query);
+            }
+
+//             Trường hợp người dùng sắp xếp theo điều kiện
+            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() == null) {
+                searchByTextSearchAndSort(nativeQuery, request);
+            }
+
+//             Trường hợp người dùng săp xếp và lọc kết quả theo điều kiện
+            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() != null) {
+                searchByTextSearchAndFilter(nativeQuery, request, query);
+                searchByTextSearchAndSort(nativeQuery, request);
+            }
+        }
+
+        List<Object[]> objects = query.getResultList();
+
+        int totalElements = objects.size();
+
+        if (!objects.isEmpty()) {
+            for (Object[] object : objects) {
+                int taskId = (int) object[0];
+                String taskName = Objects.isNull(object[1]) ? null : object[1].toString();
+                int create_by = (int) object[2];
+                Integer project_id = (int) object[3];
+                Integer section_id = (int) object[4];
+                String description = Objects.isNull(object[5]) ? null : object[5].toString();
+                String priority = Objects.isNull(object[6]) ? null : object[6].toString();
+                String status = Objects.isNull(object[7]) ? null : object[7].toString();
+                float estimate_time = (float) object[8];
+                Timestamp start_day = Objects.isNull(object[9]) ? null : (Timestamp) object[9];
+                Timestamp end_day = Objects.isNull(object[10]) ? null : (Timestamp) object[10];
+                int parent_id = (int) object[11];
+                Timestamp created_day = Objects.isNull(object[12]) ? null : (Timestamp) object[12];
+                Timestamp updated_day = Objects.isNull(object[13]) ? null : (Timestamp) object[13];
+                String project_name = Objects.isNull(object[14]) ? null : object[14].toString();
+                String section_name = Objects.isNull(object[15]) ? null : object[15].toString();
+                String assigneeName = Objects.isNull(object[16]) ? null : object[16].toString();
+
+                TaskSearchReponse taskSearchReponse = TaskSearchReponse.builder()
+                        .id(taskId)
+                        .name(taskName)
+                        .assigneeName(assigneeName)
+                        .startDay(start_day.getTime())
+                        .endDay(end_day.getTime())
+                        .priority(priority)
+                        .jobDescription(description)
+                        .status(status)
+                        .parentId(parent_id)
+                        .projectId(project_id != null ? project_id : null)
+                        .sectionId(section_id != null ? section_id : null)
+                        .projectName(project_name)
+                        .sectionName(section_name)
+                        .created_by(create_by)
+                        .estimate_time(estimate_time)
+                        .created_date(created_day.getTime())
+                        .updated_date(updated_day != null ? updated_day.getTime() : null)
+                        .build();
+
+                taskSearchResponseList.add(taskSearchReponse);
+            }
+
+            if (request.getDataType() != null) {
+
+                if (Objects.equals("today", request.getDataType()) && !CollectionUtils.isEmpty(taskSearchResponseList)) {
+
+                    List<TaskSearchReponse> responses = getTaskSearchResponseByWeekNow(taskSearchResponseList);
+                    int totalElement = responses.size();
+                    Pages pages = getPages(totalElement, pageSize, page);
+                    boolean hasNext = page < pages.getTotalPages();
+                    boolean hasPrevious = page > 1;
+                    return new PageResponse<>(
+                            responses,
+                            pages.getTotalPages(),
+                            pages.getTotalPages(),
+                            hasNext,
+                            hasPrevious
+                    );
+                }
+
+                if (Objects.equals("week", request.getDataType()) && !CollectionUtils.isEmpty(taskSearchResponseList)) {
+
+                    List<TaskSearchReponse> responses = getTaskSearchResponseByWeekNow(taskSearchResponseList);
+                    int totalElement = responses.size();
+                    Pages pages = getPages(totalElement, pageSize, page);
+                    boolean hasNext = page < pages.getTotalPages();
+                    boolean hasPrevious = page > 1;
+                    return new PageResponse<>(
+                            responses,
+                            pages.getTotalPages(),
+                            pages.getTotalPages(),
+                            hasNext,
+                            hasPrevious
+                    );
+                }
+
+                if (Objects.equals("month", request.getDataType()) && !CollectionUtils.isEmpty(taskSearchResponseList)) {
+
+                    List<TaskSearchReponse> responses = getTaskSearchResponseByMonthNow(taskSearchResponseList);
+                    int totalElement = responses.size();
+                    Pages pages = getPages(totalElement, pageSize, page);
+                    boolean hasNext = page < pages.getTotalPages();
+                    boolean hasPrevious = page > 1;
+                    return new PageResponse<>(
+                            responses,
+                            pages.getTotalPages(),
+                            pages.getTotalPages(),
+                            hasNext,
+                            hasPrevious
+                    );
+                }
+            }
+            Pages pages = getPages(totalElements, pageSize, page);
+            boolean hasNext = page < pages.getTotalPages();
+            boolean hasPrevious = page > 1;
+
+            return new PageResponse<>(
+                    taskSearchResponseList,
+                    pages.getTotalPages(),
+                    pages.getTotalPages(),
+                    hasNext,
+                    hasPrevious
+            );
+        }
+
+        List<TaskSearchReponse> taskSearchResponseIsEmpty = new ArrayList<>();
+        return new PageResponse<>(taskSearchResponseIsEmpty);
+    }
+
+    private void searchByTextSearchAndSort(String nativeQuery, TaskSearchForm request) {
+        if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByEndDay) {
+            if (request.getSortOrder().equals("ASC")) {
+                nativeQuery += "ORDER BY t.end_date ASC";
+            } else {
+                nativeQuery += "ORDER BY t.end_date DESC";
+            }
+        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByCreatedDay) {
+            if (request.getSortOrder().equals("ASC")) {
+                nativeQuery += "ORDER BY t.created_date ASC";
+            } else {
+                nativeQuery += "ORDER BY t.created_date DESC";
+            }
+        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByAssignee) {
+            if (request.getSortOrder().equals("ASC")) {
+                nativeQuery += "ORDER BY t.assignee ASC";
+            } else {
+                nativeQuery += "ORDER BY t.assignee DESC";
+            }
+        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByPriority) {
+            if (request.getSortOrder().equals("ASC")) {
+                nativeQuery += "ORDER BY t.priority ASC";
+            } else {
+                nativeQuery += "ORDER BY t.priority DESC";
+            }
+        }
+    }
+
+    private void searchByTextSearchAndFilter(String nativeQuery, TaskSearchForm request, Query query) {
+
+
+        if (Objects.equals(request.getFilterBy(), "Finished")) {
+            query.setParameter(3, "Finished");
+            nativeQuery += "WHERE t.status = (?3)";
+        } else if (Objects.equals(request.getFilterBy(), "InProgress")) {
+            query.setParameter(3, "InProgress");
+            nativeQuery += "WHERE t.status = (?3)";
+        }
+    }
+
+    private Pages getPages(int totalElements, int pageSize, int page) {
+        int totalPages = 0;
+        if (totalElements > 0) {
+            totalPages = (int) (totalElements % pageSize == 0 ?
+                    totalElements / pageSize :
+                    totalElements / pageSize + 1);
+        }
+        Pages pages = new Pages(totalElements, pageSize, page, totalPages);
+        return pages;
+    }
+
+    private List<TaskSearchReponse> getTaskSearchResponseByToday(List<TaskSearchReponse> taskSearchResponseList) {
+        if (taskSearchResponseList != null) {
+            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(taskCreatedDay)) {
+                LocalDate today = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                int day = today.getDayOfMonth();
+                List<TaskSearchReponse> taskSearchReponsesList = new ArrayList<>();
+
+                for (int i = 0; i < taskCreatedDay.size(); i++) {
+                    Date date = new Date(taskCreatedDay.get(i));
+                    LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    int dayOfMonth = localDateOfT.getDayOfMonth();
+                    if (dayOfMonth == day) {
+                        taskSearchReponsesList.add(taskSearchResponseList.get(i));
+                    }
+                }
+                if (!CollectionUtils.isEmpty(taskSearchReponsesList)) {
+                    return taskSearchReponsesList;
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<TaskSearchReponse> getTaskSearchResponseByWeekNow(List<TaskSearchReponse> taskSearchResponseList) {
+        if (taskSearchResponseList != null) {
+            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(taskCreatedDay)) {
+                LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                int weekOfYearNow = dateNow.get(WeekFields.of(DayOfWeek.MONDAY, 7).weekOfYear());
+                List<TaskSearchReponse> taskSearchReponsesList = new ArrayList<>();
+
+                for (int i = 0; i < taskCreatedDay.size(); i++) {
+                    Date date = new Date(taskCreatedDay.get(i));
+                    LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    int weekOfYear = localDateOfT.get(WeekFields.of(DayOfWeek.MONDAY, 7).weekOfYear());
+                    if (weekOfYear == weekOfYearNow) {
+                        taskSearchReponsesList.add(taskSearchResponseList.get(i));
+                    }
+                }
+                if (!taskSearchReponsesList.isEmpty()) {
+                    return taskSearchReponsesList;
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<TaskSearchReponse> getTaskSearchResponseByMonthNow(List<TaskSearchReponse> taskSearchResponseList) {
+        if (taskSearchResponseList != null) {
+            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(taskCreatedDay)) {
+                LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                int monthNow = dateNow.getMonthValue();
+                List<TaskSearchReponse> taskSearchResponsesList = new ArrayList<>();
+                for (int i = 0; i < taskCreatedDay.size(); i++) {
+                    Date date = new Date(taskCreatedDay.get(i));
+                    LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    int month = localDateOfT.getMonthValue();
+                    if (month == monthNow) {
+                        taskSearchResponsesList.add(taskSearchResponseList.get(i));
+                    }
+                }
+                if (!taskSearchResponsesList.isEmpty()) {
+                    return taskSearchResponsesList;
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public Task addNewTask(TaskForm taskForm, String token) {
         log.info("TaskService -> addNewTask");
 

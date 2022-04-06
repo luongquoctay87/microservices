@@ -29,6 +29,18 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @PostMapping("/search")
+    public ResponseEntity<ApiResponse> search(@RequestBody TaskSearchForm _form,
+                                              @RequestParam(name = "page", defaultValue = "1") int _page,
+                                              @RequestParam(name = "pageSize", defaultValue = "5") int _pageSize) {
+        log.info("Task Controler -> search");
+
+        PageResponse<TaskSearchReponse> data = taskService.search(_page, _pageSize, _form);
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.CREATED.value(), null)
+                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), null);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping()
     public ResponseEntity<ApiResponse> createNewTask(@RequestBody TaskForm _form, @RequestHeader(name = "Authorization") String _token) {
         log.info("Task Controler -> createNewTask");

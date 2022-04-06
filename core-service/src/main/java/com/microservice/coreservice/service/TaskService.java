@@ -9,6 +9,12 @@ import com.microservice.coreservice.utils.pagination.PageResponse;
 import java.util.List;
 
 public interface TaskService {
+
+    PageResponse<TaskSearchReponse> search(int page,
+                                           int pageSize,
+                                           TaskSearchForm form
+    );
+
     Task addNewTask(TaskForm form, String token);
 
     Task getById(int taskId);
