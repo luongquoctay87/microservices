@@ -24,7 +24,7 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse> addDepartment(@RequestBody DepartmentForm _form) {
         Department department = departmentService.addNewDepartment(_form);
         DepartmentDto dto = department.toDto();
-        ApiResponse response = ApiResponse.success(department, HttpStatus.OK.value(), "Thêm thành công");
+        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Thêm thành công");
         return ResponseEntity.ok(response);
     }
 
@@ -46,7 +46,7 @@ public class DepartmentController {
 
     @PutMapping( "/{id}")
     public ResponseEntity<ApiResponse> updateDepartment(@RequestBody DepartmentForm _form, @PathVariable("id") Long _id) {
-        Department department = departmentService.updateDepartment(_form.getDepartmentName(), _form.getDepartmentAddress(), _form.getDepartmentCode(), _id);
+        Department department = departmentService.updateDepartment(_form.getDepartmentName(), _id);
         DepartmentDto dto = department.toDto();
         ApiResponse response = ApiResponse.success(department,HttpStatus.OK.value(), "Chỉnh sửa thành công " + _id);
         return ResponseEntity.ok(response);

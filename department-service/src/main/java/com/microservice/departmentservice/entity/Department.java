@@ -6,31 +6,41 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "pa_departments")
 public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long departmentId;
+
+    @Column(name = "name")
     private String departmentName;
-    private String departmentAddress;
-    private String departmentCode;
+
+    @Column(name = "enabled")
+    private Boolean enabled;
+
+    @Column
+    private Timestamp created_date;
+
+    @Column
+    private Timestamp updated_date;
 
     public DepartmentDto toDto() {
         return DepartmentDto.builder()
                 .departmentId(departmentId)
                 .departmentName(departmentName)
-                .departmentAddress(departmentAddress)
-                .departmentCode(departmentCode)
+                .enabled(enabled)
+                .created_date(created_date)
+                .updated_date(updated_date)
                 .build();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,15 +36,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         department = Department.builder()
                 .departmentName(form.getDepartmentName())
-                .departmentAddress(form.getDepartmentAddress())
-                .departmentCode(form.getDepartmentCode())
                 .build();
+
+        department.setCreated_date(new Timestamp(System.currentTimeMillis()));
 
         return save(department);
     }
 
     @Override
-    public Department updateDepartment(String name, String address, String code, Long id) {
+    public Department updateDepartment(String name, Long id) {
         Department department = departmentRepository.findById(id).get();
 
         if(ObjectUtils.isEmpty(department)) {
@@ -59,6 +60,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         department.setDepartmentName(name);
+        department.setUpdated_date(new Timestamp(System.currentTimeMillis()));
 
         return save(department);
     }

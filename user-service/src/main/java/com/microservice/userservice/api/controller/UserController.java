@@ -1,4 +1,4 @@
-package com.microservice.userservice.controller;
+package com.microservice.userservice.api.controller;
 
 
 import com.microservice.userservice.VO.ResponseTemplateVO;
