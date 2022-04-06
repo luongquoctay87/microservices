@@ -29,4 +29,67 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @PostMapping()
+    public ResponseEntity<ApiResponse> createNewTask(@RequestBody TaskForm _form, @RequestHeader(name = "Authorization") String _token) {
+        log.info("Task Controler -> createNewTask");
+
+        Task task = taskService.addNewTask(_form, _token);
+        TaskDto data = TaskDto.toDto(task);
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.CREATED.value(), "Thêm mới công việc thành công")
+                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), "Thêm mới công việc thất bại");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse> getTaskById(@PathVariable(name = "id") int _taskId) {
+        log.info("Task Controler -> getTaskById");
+
+        Task task = taskService.getById(_taskId);
+        TaskDto data = TaskDto.toDto(task);
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.OK.value(), null)
+                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), null);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping()
+    public ResponseEntity<ApiResponse> getListTask(@RequestParam(name = "projectId", required = false) Integer _projectId, @RequestParam(name = "sectionId", required = false, defaultValue = "0") Integer _sectionId) {
+        log.info("Task Controler -> getListTask");
+
+        List<Task> tasks = taskService.getListTask(_projectId, _sectionId);
+        List<TaskDto> data = tasks.stream().map(TaskDto::toDto).collect(Collectors.toList());
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.OK.value(), null)
+                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), "Error");
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse> updateStatus(@PathVariable(name = "id") int _id, @RequestParam(name = "status") String _status) {
+        log.info("Task Controler -> updateStatus");
+
+        Task task = taskService.updateStatus(_id, _status);
+        TaskDto data = TaskDto.toDto(task);
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.OK.value(), "Cập nhật trạng thái công việc thành công")
+                : ApiResponse.appendError(HttpStatus.BAD_REQUEST.value(), "Cập nhật trạng thái công việc không thành công");
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteTask(@PathVariable(name = "id") int _id) {
+        log.info("Task Controler -> deleteTask");
+
+        taskService.deleteTask(_id);
+        ApiResponse response = ApiResponse.appendSuccess(null, HttpStatus.OK.value(), "Xóa công việc thành công");
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> updateTask(@RequestBody TaskForm _form, @PathVariable(name = "id") int _taskId) {
+        log.info("Task Controler -> updateTask");
+
+        Task task = taskService.updateTask(_form, _taskId);
+        TaskDto data = TaskDto.toDto(task);
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.CREATED.value(), "Cập nhật công việc thành công")
+                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), "Cập nhật công việc thất bại");
+        return ResponseEntity.ok(response);
+    }
 }

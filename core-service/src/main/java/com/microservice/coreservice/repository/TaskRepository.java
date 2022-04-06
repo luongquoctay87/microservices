@@ -8,4 +8,13 @@ import java.util.List;
 
 public interface TaskRepository extends CrudRepository<Task, Integer> {
 
+    @Query("SELECT t FROM Task t WHERE t.project_id = :projectId")
+    List<Task> findByProjectId(int projectId);
+
+    @Query("SELECT t FROM Task t WHERE t.project_id = :projectId AND t.section_id = :sectionId")
+    List<Task> getListTaskInSectionAndProject(int projectId, int sectionId);
+
+    @Query(value = "SELECT t FROM Task t WHERE t.project_id IS NULL AND t.section_id IS NULL")
+    List<Task> getListTaskPersonal();
+
 }

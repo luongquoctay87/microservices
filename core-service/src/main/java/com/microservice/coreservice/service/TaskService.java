@@ -9,5 +9,15 @@ import com.microservice.coreservice.utils.pagination.PageResponse;
 import java.util.List;
 
 public interface TaskService {
+    Task addNewTask(TaskForm form, String token);
 
+    Task getById(int taskId);
+
+    Task updateTask(TaskForm form, int taskId);
+
+    Task updateStatus(int id, String status);
+
+    List<Task> getListTask(Integer projectId, Integer sectionId);
+
+    void deleteTask(int taskId);
 }
