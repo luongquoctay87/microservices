@@ -8,6 +8,12 @@ import org.springframework.data.repository.CrudRepository;
 import javax.transaction.Transactional;
 
 public interface TeamUserRepository extends CrudRepository<TeamUser, Integer> {
- 
 
+    @Query(value = "SELECT new com.microservice.coreservice.entity.TeamUser(t.team_id, t.department_id, t.user_id, t.created_date, t.updated_date) FROM TeamUser t WHERE t.team_id  = ?1")
+    Object findByTeamId(int teamId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE TeamUser p WHERE p.team_id = ?1 ")
+    void deleteByTeamId(int id);
 }
