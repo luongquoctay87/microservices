@@ -76,7 +76,6 @@ public class CommentServiceImpl implements CommentService {
         comment.setTaskId(commentDto.getTaskId());
         comment.setReplyId(commentDto.getReplyId());
         comment.setContent(commentDto.getContent());
-        comment.setImg(commentDto.getImg());
         return comment;
     }
 
@@ -85,7 +84,6 @@ public class CommentServiceImpl implements CommentService {
         CommentForm commentForm = new CommentForm();
         commentForm.setId(_comment.getId());
         commentForm.setUserId(_comment.getUserId());
-        commentForm.setImg(_comment.getImg());
         commentForm.setContent(_comment.getContent());
         commentForm.setCreatedDate( ConvertDate.convertDateToString(_comment.getCreatedDate()));
         if(_comment.getUpdatedDate() == null){

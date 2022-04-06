@@ -20,5 +20,4 @@ public class CommentDto implements Serializable {
     @NotEmpty(message = "không được để trống")
     private String content;
 
-    private String img;
 }

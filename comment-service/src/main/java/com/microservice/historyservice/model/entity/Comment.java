@@ -28,7 +28,5 @@ public class Comment {
     private Date createdDate;
     @Column(name = "updated_date")
     private Date updatedDate;
-    @Column(name = "img")
-    private String img;
 
 }
