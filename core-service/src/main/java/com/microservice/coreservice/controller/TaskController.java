@@ -14,7 +14,10 @@ import com.microservice.coreservice.utils.pagination.PageResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,5 +106,16 @@ public class TaskController {
         ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.CREATED.value(), "Cập nhật công việc thành công")
                 : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), "Cập nhật công việc thất bại");
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/export/users")
+    public ResponseEntity<?> exportProgressUserToExcel() {
+        String filename = "users.xlsx";
+        InputStreamResource file = new InputStreamResource(taskService.exportProgressUser());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);
     }
 }

@@ -1,6 +1,7 @@
 package com.microservice.coreservice.service.impl;
 
 import com.microservice.coreservice.domain.form.TeamForm;
+import com.microservice.coreservice.entity.Department;
 import com.microservice.coreservice.entity.ProjectTeam;
 import com.microservice.coreservice.entity.Team;
 import com.microservice.coreservice.entity.TeamUser;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
@@ -34,6 +36,9 @@ public class TeamServiceImpl implements TeamService {
 
     @Autowired
     private ProjectTeamRepository projectTeamRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public Team createNewTeam(TeamForm form) {
@@ -88,6 +93,12 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public Team updateTeam(TeamForm form, int teamId) {
         log.info("TeamService -> updateTeam");
+
+//        List<Long> department = (List<Long>) restTemplate.getForObject("http://DEPARTMENT-SERVICE/departments" , Department.class);
+//
+//        form.getDepartmentIds().forEach(id -> {
+//            if(department.)
+//        });
 
         validateUpdateForm(form, teamId);
         Team team = teamRepository.findById(teamId).get();

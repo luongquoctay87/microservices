@@ -6,6 +6,7 @@ import com.microservice.coreservice.domain.form.TaskSearchForm;
 import com.microservice.coreservice.entity.Task;
 import com.microservice.coreservice.utils.pagination.PageResponse;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 public interface TaskService {
@@ -26,4 +27,7 @@ public interface TaskService {
     List<Task> getListTask(Integer projectId, Integer sectionId);
 
     void deleteTask(int taskId);
+
+    ByteArrayInputStream exportProgressUser();
+
 }
