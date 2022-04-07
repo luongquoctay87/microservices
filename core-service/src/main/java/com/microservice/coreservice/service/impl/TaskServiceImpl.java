@@ -67,7 +67,29 @@ public class TaskServiceImpl implements TaskService {
 
         List<TaskSearchReponse> taskSearchResponseList = new ArrayList<>();
 
-        String nativeQuery = "SELECT" +
+        List<Integer> taskIds = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
+        List<Integer> taskList = taskRepository.findAllId();
+
+        //        Trường hợp người dùng search
+        if(request.getTextSearch() != null && request.getFilterBy() == null ) {
+            tasks = taskRepository.findByName(request.getTextSearch());
+
+            //        Trường hợp người dùng filter
+        }else if(request.getTextSearch() == null && request.getFilterBy() != null) {
+            StatusEnums status = StatusEnums.valueOf(request.getFilterBy());
+            tasks = taskRepository.findByStatus(status);
+        }
+
+        tasks.forEach(t -> {
+            taskList.forEach(id -> {
+                if(t.getId() == id) {
+                    taskIds.add(t.getId());
+                }
+            });
+        });
+
+        String nativeQuery = "SELECT " +
                 "t.id," +
                 "t.name as taskName," +
                 "t.created_by," +
@@ -84,56 +106,32 @@ public class TaskServiceImpl implements TaskService {
                 "t.updated_date," +
                 "p.name as projectName," +
                 "s.name as sectionName," +
-                "u.username\n" +
-                "FROM pa_tasks t " +
-                "JOIN pa_projects p ON t.project_id = p.id\n" +
+                "u.username\n"+
+                "FROM pa_tasks t JOIN pa_projects p ON t.project_id = p.id\n" +
                 "JOIN pa_sections s ON t.section_id = s.id\n" +
                 "JOIN pa_users u ON t.assignee = u.id\n" +
-                "WHERE p.id = (?1) AND s.id = (?2)";
+                "WHERE t.id in :taskId OR t.id in :status AND p.id = :projectId AND s.id = :sectionId";
 
         Query query = entityManager.createNativeQuery(nativeQuery)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize)
-                .setParameter(1, request.getProject_id())
-                .setParameter(2, request.getSection_id());
+                .setParameter("taskId", taskIds.size() > 0 ? taskIds : taskList)
+                .setParameter("projectId", request.getProject_id())
+                .setParameter("sectionId", request.getSection_id() != 0 ? request.getSection_id() : null)
+                .setParameter("status", taskIds.size() > 0 ? taskIds : taskList);
 
         // Trường hợp request gửi lên không null textsearch
-        if (request.getTextSearch() != null && request.getTextSearch().trim().length() > 0) {
-
-            nativeQuery += "AND t.name LIKE CONCAT('%','" + request.getTextSearch() + "', '%')";
-
-            // Trường hợp người dùng tìm kiếm kèm lọc kết quả theo điều kiện
-            if (request.getSortProperty() == null && request.getSortOrder() == null && request.getFilterBy() != null) {
-                searchByTextSearchAndFilter(nativeQuery, request, query);
-            }
+        if(request.getTextSearch() != null && request.getTextSearch().trim().length() > 0) {
 
             // Trường hợp người dùng tìm kiếm kèm sắp xếp theo điều kiện
-            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() == null) {
-                searchByTextSearchAndSort(nativeQuery, request);
-            }
-
-            //   Trường hợp người dùng tìm kiếm kèm sắp xếp và lọc kết quả theo điều kiện
-            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() != null) {
-                searchByTextSearchAndFilter(nativeQuery, request, query);
+            if(request.getSortProperty() != null && request.getSortOrder() != null) {
                 searchByTextSearchAndSort(nativeQuery, request);
             }
 
             // Trường hợp request gửi lên  null textsearch
-        } else {
-
-//           Trường hợp người dùng lọc kết quả theo điều kiện
-            if (request.getSortProperty() == null && request.getSortOrder() == null && request.getFilterBy() != null) {
-                searchByTextSearchAndFilter(nativeQuery, request, query);
-            }
-
-//             Trường hợp người dùng sắp xếp theo điều kiện
-            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() == null) {
-                searchByTextSearchAndSort(nativeQuery, request);
-            }
-
-//             Trường hợp người dùng săp xếp và lọc kết quả theo điều kiện
-            if (request.getSortProperty() != null && request.getSortOrder() != null && request.getFilterBy() != null) {
-                searchByTextSearchAndFilter(nativeQuery, request, query);
+        }else {
+            // Trường hợp người dùng sắp xếp theo điều kiện
+            if(request.getSortProperty() != null && request.getSortOrder() != null) {
                 searchByTextSearchAndSort(nativeQuery, request);
             }
         }
@@ -142,9 +140,9 @@ public class TaskServiceImpl implements TaskService {
 
         int totalElements = objects.size();
 
-        if (!objects.isEmpty()) {
+        if(!objects.isEmpty()) {
             for (Object[] object : objects) {
-                int taskId = (int) object[0];
+                int id = (int) object[0];
                 String taskName = Objects.isNull(object[1]) ? null : object[1].toString();
                 int create_by = (int) object[2];
                 Integer project_id = (int) object[3];
@@ -163,7 +161,7 @@ public class TaskServiceImpl implements TaskService {
                 String assigneeName = Objects.isNull(object[16]) ? null : object[16].toString();
 
                 TaskSearchReponse taskSearchReponse = TaskSearchReponse.builder()
-                        .id(taskId)
+                        .id(id)
                         .name(taskName)
                         .assigneeName(assigneeName)
                         .startDay(start_day.getTime())
@@ -189,7 +187,7 @@ public class TaskServiceImpl implements TaskService {
 
                 if (Objects.equals("today", request.getDataType()) && !CollectionUtils.isEmpty(taskSearchResponseList)) {
 
-                    List<TaskSearchReponse> responses = getTaskSearchResponseByWeekNow(taskSearchResponseList);
+                    List<TaskSearchReponse> responses = getTaskSearchResponseByToday(taskSearchResponseList);
                     int totalElement = responses.size();
                     Pages pages = getPages(totalElement, pageSize, page);
                     boolean hasNext = page < pages.getTotalPages();
@@ -197,7 +195,7 @@ public class TaskServiceImpl implements TaskService {
                     return new PageResponse<>(
                             responses,
                             pages.getTotalPages(),
-                            pages.getTotalPages(),
+                            pages.getTotalElements(),
                             hasNext,
                             hasPrevious
                     );
@@ -213,7 +211,7 @@ public class TaskServiceImpl implements TaskService {
                     return new PageResponse<>(
                             responses,
                             pages.getTotalPages(),
-                            pages.getTotalPages(),
+                            pages.getTotalElements(),
                             hasNext,
                             hasPrevious
                     );
@@ -229,7 +227,7 @@ public class TaskServiceImpl implements TaskService {
                     return new PageResponse<>(
                             responses,
                             pages.getTotalPages(),
-                            pages.getTotalPages(),
+                            pages.getTotalElements(),
                             hasNext,
                             hasPrevious
                     );
@@ -242,7 +240,7 @@ public class TaskServiceImpl implements TaskService {
             return new PageResponse<>(
                     taskSearchResponseList,
                     pages.getTotalPages(),
-                    pages.getTotalPages(),
+                    pages.getTotalElements(),
                     hasNext,
                     hasPrevious
             );
@@ -253,53 +251,41 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void searchByTextSearchAndSort(String nativeQuery, TaskSearchForm request) {
-        if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByEndDay) {
-            if (request.getSortOrder().equals("ASC")) {
-                nativeQuery += "ORDER BY t.end_date ASC";
-            } else {
-                nativeQuery += "ORDER BY t.end_date DESC";
+        if(SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByEndDay) {
+            if(request.getSortOrder().equals("ASC")) {
+                nativeQuery += " " + "ORDER BY t.end_date ASC";
+            }else {
+                nativeQuery += " " + "ORDER BY t.end_date DESC";
             }
-        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByCreatedDay) {
-            if (request.getSortOrder().equals("ASC")) {
-                nativeQuery += "ORDER BY t.created_date ASC";
-            } else {
-                nativeQuery += "ORDER BY t.created_date DESC";
+        }else if(SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByCreatedDay) {
+            if(request.getSortOrder().equals("ASC")) {
+                nativeQuery += " " + "ORDER BY t.created_date ASC";
+            }else {
+                nativeQuery += " " + "ORDER BY t.created_date DESC";
             }
-        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByAssignee) {
-            if (request.getSortOrder().equals("ASC")) {
-                nativeQuery += "ORDER BY t.assignee ASC";
-            } else {
-                nativeQuery += "ORDER BY t.assignee DESC";
+        }else if(SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByAssignee) {
+            if(request.getSortOrder().equals("ASC")) {
+                nativeQuery += " " + "ORDER BY t.assignee ASC";
+            }else {
+                nativeQuery += " " + "ORDER BY t.assignee DESC";
             }
-        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByPriority) {
-            if (request.getSortOrder().equals("ASC")) {
-                nativeQuery += "ORDER BY t.priority ASC";
-            } else {
-                nativeQuery += "ORDER BY t.priority DESC";
+        }else if(SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByPriority) {
+            if(request.getSortOrder().equals("ASC")) {
+                nativeQuery += " " + "ORDER BY t.priority ASC";
+            }else {
+                nativeQuery += " " + "ORDER BY t.priority DESC";
             }
-        }
-    }
-
-    private void searchByTextSearchAndFilter(String nativeQuery, TaskSearchForm request, Query query) {
-
-
-        if (Objects.equals(request.getFilterBy(), "Finished")) {
-            query.setParameter(3, "Finished");
-            nativeQuery += "WHERE t.status = (?3)";
-        } else if (Objects.equals(request.getFilterBy(), "InProgress")) {
-            query.setParameter(3, "InProgress");
-            nativeQuery += "WHERE t.status = (?3)";
         }
     }
 
     private Pages getPages(int totalElements, int pageSize, int page) {
         int totalPages = 0;
         if (totalElements > 0) {
-            totalPages = (int) (totalElements % pageSize == 0 ?
+            totalPages = totalElements % pageSize == 0 ?
                     totalElements / pageSize :
-                    totalElements / pageSize + 1);
+                    totalElements / pageSize + 1;
         }
-        Pages pages = new Pages(totalElements, pageSize, page, totalPages);
+        Pages pages = new Pages(totalElements, totalPages, pageSize, page );
         return pages;
     }
 
@@ -309,18 +295,18 @@ public class TaskServiceImpl implements TaskService {
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
                 LocalDate today = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 int day = today.getDayOfMonth();
-                List<TaskSearchReponse> taskSearchReponsesList = new ArrayList<>();
+                List<TaskSearchReponse> taskSearchReponses = new ArrayList<>();
 
                 for (int i = 0; i < taskCreatedDay.size(); i++) {
                     Date date = new Date(taskCreatedDay.get(i));
                     LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     int dayOfMonth = localDateOfT.getDayOfMonth();
                     if (dayOfMonth == day) {
-                        taskSearchReponsesList.add(taskSearchResponseList.get(i));
+                        taskSearchReponses.add(taskSearchResponseList.get(i));
                     }
                 }
-                if (!CollectionUtils.isEmpty(taskSearchReponsesList)) {
-                    return taskSearchReponsesList;
+                if(!CollectionUtils.isEmpty(taskSearchReponses)) {
+                    return taskSearchReponses;
                 }
             }
         }
@@ -333,18 +319,18 @@ public class TaskServiceImpl implements TaskService {
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
                 LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 int weekOfYearNow = dateNow.get(WeekFields.of(DayOfWeek.MONDAY, 7).weekOfYear());
-                List<TaskSearchReponse> taskSearchReponsesList = new ArrayList<>();
+                List<TaskSearchReponse> taskSearchReponses = new ArrayList<>();
 
                 for (int i = 0; i < taskCreatedDay.size(); i++) {
                     Date date = new Date(taskCreatedDay.get(i));
                     LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     int weekOfYear = localDateOfT.get(WeekFields.of(DayOfWeek.MONDAY, 7).weekOfYear());
                     if (weekOfYear == weekOfYearNow) {
-                        taskSearchReponsesList.add(taskSearchResponseList.get(i));
+                        taskSearchReponses.add(taskSearchResponseList.get(i));
                     }
                 }
-                if (!taskSearchReponsesList.isEmpty()) {
-                    return taskSearchReponsesList;
+                if (!taskSearchReponses.isEmpty()) {
+                    return taskSearchReponses ;
                 }
             }
         }
@@ -357,22 +343,23 @@ public class TaskServiceImpl implements TaskService {
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
                 LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 int monthNow = dateNow.getMonthValue();
-                List<TaskSearchReponse> taskSearchResponsesList = new ArrayList<>();
+                List<TaskSearchReponse> taskSearchReponses = new ArrayList<>();
                 for (int i = 0; i < taskCreatedDay.size(); i++) {
                     Date date = new Date(taskCreatedDay.get(i));
                     LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     int month = localDateOfT.getMonthValue();
                     if (month == monthNow) {
-                        taskSearchResponsesList.add(taskSearchResponseList.get(i));
+                        taskSearchReponses.add(taskSearchResponseList.get(i));
                     }
                 }
-                if (!taskSearchResponsesList.isEmpty()) {
-                    return taskSearchResponsesList;
+                if (!taskSearchReponses.isEmpty()) {
+                    return taskSearchReponses;
                 }
             }
         }
         return new ArrayList<>();
     }
+
 
     @Override
     public Task addNewTask(TaskForm taskForm, String token) {
