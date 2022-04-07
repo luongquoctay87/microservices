@@ -1,38 +1,25 @@
 package com.microservice.userservice.service;
 
-import com.microservice.userservice.VO.Department;
 import com.microservice.userservice.VO.ResponseTemplateVO;
+import com.microservice.userservice.api.form.UserForm;
 import com.microservice.userservice.entity.User;
-import com.microservice.userservice.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-@Service
-@Slf4j
-public class UserService {
+import java.util.List;
 
-    @Autowired
-    private UserRepository userRepository;
+public interface UserService {
+    User createNewUser(UserForm form);
 
-    @Autowired
-    private RestTemplate restTemplate;
+    User changePassword(String password, long userId);
 
+    User changeUsername(String username, long userId);
 
-    public User saveUser(User user) {
-        log.info("UserService -> saveUser");
-        return userRepository.save(user);
-    }
+    User findUserById(long userId);
 
-    public ResponseTemplateVO getUserWithDepartment(Long userId) {
-        log.info("UserService -> getUserWithDepartment");
-        ResponseTemplateVO vo = new ResponseTemplateVO();
-        User user = userRepository.findByUserId(userId);
-        Department department = restTemplate.getForObject(String.format("http://DEPARTMENT-SERVICE/departments/%s", userId),Department.class);
-        vo.setUser(user);
-        vo.setDepartment(department);
+    List<User> getListUsers();
 
-        return vo;
-    }
+    void deleteUser(long userId);
+
+    public ResponseTemplateVO getUserWithDepartment(Long userId);
+
+    User save(User user);
 }
