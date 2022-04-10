@@ -18,19 +18,19 @@ import java.util.Date;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column
-    private int created_by;
+    private Long created_by;
 
     @Column
-    private int assignee;
+    private Long assignee;
 
     @Column
-    private Integer project_id;
+    private Long project_id;
 
     @Column
-    private Integer section_id;
+    private Long section_id;
 
     @Column
     private String name;
@@ -54,7 +54,7 @@ public class Task {
     private Timestamp end_date;
 
     @Column(columnDefinition = "0")
-    private int parent_id;
+    private Long parent_id;
 
     @Column
     private Timestamp created_date;
@@ -63,7 +63,7 @@ public class Task {
     private Timestamp updated_date;
 
 
-    public Task(int id, int created_by, int assignee, Integer project_id, Integer section_id, String name, String description, PriorityEnums priority, StatusEnums status, float estimate_time, Timestamp start_date, Timestamp end_date, int parent_id, Timestamp created_date, Timestamp updated_date) {
+    public Task(Long id, Long created_by, Long assignee, Long project_id, Long section_id, String name, String description, PriorityEnums priority, StatusEnums status, float estimate_time, Timestamp start_date, Timestamp end_date, Long parent_id, Timestamp created_date, Timestamp updated_date) {
         this.id = id;
         this.created_by = created_by;
         this.assignee = assignee;

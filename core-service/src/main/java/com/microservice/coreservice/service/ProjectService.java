@@ -9,13 +9,13 @@ public interface ProjectService {
 
     Project addNewProject(ProjectForm form);
 
-    Project update(ProjectForm form, int projectId);
+    Project update(ProjectForm form, Long projectId);
 
-    Project updateName(String name, int projectId);
+    Project updateName(String name, Long projectId);
 
-    void deleteProject(int projectId);
+    void deleteProject(Long projectId);
 
-    Project findProjectById(int projectId);
+    Project findProjectById(Long projectId);
 
     List<Project> getListProject();
 

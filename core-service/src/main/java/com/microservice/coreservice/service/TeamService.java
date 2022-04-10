@@ -9,15 +9,15 @@ import java.util.List;
 public interface TeamService {
     Team createNewTeam(TeamForm form);
 
-    Team updateTeam(TeamForm form, int teamId);
+    Team updateTeam(TeamForm form, Long teamId);
 
-    Team updateName(String name, int teamId);
+    Team updateName(String name, Long teamId);
 
-    Team findTeamById(int id);
+    Team findTeamById(Long id);
 
-    List<Team> getListTeam(int projectId);
+    List<Team> getListTeam(Long projectId);
 
-    void deleteTeam(int id);
+    void deleteTeam(Long id);
 
 
 }

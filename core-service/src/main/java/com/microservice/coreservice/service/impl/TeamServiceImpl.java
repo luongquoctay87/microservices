@@ -34,11 +34,13 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     private TeamUserRepository teamUserRepository;
 
-    @Autowired
-    private ProjectTeamRepository projectTeamRepository;
 
     @Autowired
     private RestTemplate restTemplate;
+    
+    @Autowired
+    private ProjectTeamRepository projectTeamRepository;
+
 
     @Override
     public Team createNewTeam(TeamForm form) {
@@ -91,7 +93,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team updateTeam(TeamForm form, int teamId) {
+    public Team updateTeam(TeamForm form, Long teamId) {
         log.info("TeamService -> updateTeam");
 
 //        List<Long> department = (List<Long>) restTemplate.getForObject("http://DEPARTMENT-SERVICE/departments" , Department.class);
@@ -152,7 +154,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team updateName(String name, int teamId) {
+    public Team updateName(String name, Long teamId) {
         log.info("TeamService -> updateName");
 
         ValidateUtils.validateNullOrBlankString(name);
@@ -168,7 +170,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team findTeamById(int id) {
+    public Team findTeamById(Long id) {
         log.info("TeamService -> findTeamById");
 
         Team team = teamRepository.findById(id).get();
@@ -179,7 +181,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<Team> getListTeam(int projectId) {
+    public List<Team> getListTeam(Long projectId) {
         log.info("TeamService -> getListTeam");
 
         try {
@@ -190,7 +192,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void deleteTeam(int id) {
+    public void deleteTeam(Long id) {
         log.info("TeamService -> deleteTeam");
 
         if(!teamRepository.existsById(id)) {
@@ -211,7 +213,7 @@ public class TeamServiceImpl implements TeamService {
         ValidateUtils.validateNullOrBlankString(map);
     }
 
-    private void validateUpdateForm(TeamForm form, int teamId) {
+    private void validateUpdateForm(TeamForm form, Long teamId) {
 
         HashMap<String, String> map = new HashMap<>();
         map.put("Tên", form.getName());

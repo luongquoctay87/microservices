@@ -18,7 +18,7 @@ import java.util.Date;
 public class TeamUser implements Serializable {
 
     @Id
-    private int team_id;
+    private Long team_id;
 
     @Column
     private Long department_id;
@@ -32,7 +32,7 @@ public class TeamUser implements Serializable {
     @Column
     private Timestamp updated_date;
 
-    public TeamUser(int team_id, Long department_id, Long user_id, Date created_date, Date updated_date) {
+    public TeamUser(Long team_id, Long department_id, Long user_id, Date created_date, Date updated_date) {
         this.team_id = team_id;
         this.department_id = department_id;
         this.user_id = user_id;

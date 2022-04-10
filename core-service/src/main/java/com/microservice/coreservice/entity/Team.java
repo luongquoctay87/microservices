@@ -17,7 +17,7 @@ public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column
     private String name;
@@ -34,7 +34,7 @@ public class Team {
     @Column
     private Timestamp updated_date;
 
-    public Team(int id, String name, String description, Boolean enabled, Date created_date, Date updated_date) {
+    public Team(Long id, String name, String description, Boolean enabled, Date created_date, Date updated_date) {
         this.id = id;
         this.name = name;
         this.description = description;

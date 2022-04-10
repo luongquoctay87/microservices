@@ -18,7 +18,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column
     private String name;
@@ -38,7 +38,7 @@ public class Project {
     @Column
     private Timestamp updated_date;
 
-    public Project(int id, String name, String description, ProjectEnums type, Boolean enabled, Date created_date, Date updated_date) {
+    public Project(Long id, String name, String description, ProjectEnums type, Boolean enabled, Date created_date, Date updated_date) {
         this.id = id;
         this.name = name;
         this.description = description;

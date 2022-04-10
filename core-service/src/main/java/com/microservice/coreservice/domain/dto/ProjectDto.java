@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class ProjectDto {
 
+    private Long id;
     private String name;
     private String description;
     private String type;
@@ -17,11 +18,12 @@ public class ProjectDto {
 
     public static ProjectDto toDto(Project project) {
         return ProjectDto.builder()
-                .name(project.getName())
-                .description(project.getDescription())
-                .type(project.getType().name())
+                .id(project.getId())
+                .name(project.getName() != null ? project.getName() : null)
+                .description(project.getDescription() != null ? project.getDescription() :  null)
+                .type(project.getType() != null ? project.getType().name() : null)
                 .enabled(project.getEnabled())
-                .created_day(project.getCreated_date().getTime())
+                .created_day(project.getCreated_date() != null ? project.getCreated_date().getTime() : null)
                 .updated_day(project.getUpdated_date() != null ? project.getUpdated_date().getTime() : null)
                 .build();
 

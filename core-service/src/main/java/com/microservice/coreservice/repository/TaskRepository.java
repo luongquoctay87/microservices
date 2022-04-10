@@ -10,13 +10,13 @@ import org.springframework.data.repository.CrudRepository;
 import java.sql.Timestamp;
 import java.util.List;
 
-public interface TaskRepository extends CrudRepository<Task, Integer> {
+public interface TaskRepository extends CrudRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE t.project_id = :projectId")
-    List<Task> findByProjectId(int projectId);
+    List<Task> findByProjectId(Long projectId);
 
     @Query("SELECT t FROM Task t WHERE t.project_id = :projectId AND t.section_id = :sectionId")
-    List<Task> getListTaskInSectionAndProject(int projectId, int sectionId);
+    List<Task> getListTaskInSectionAndProject(Long projectId, Long sectionId);
 
     @Query(value = "SELECT t FROM Task t WHERE t.project_id IS NULL AND t.section_id IS NULL")
     List<Task> getListTaskPersonal();
@@ -45,11 +45,11 @@ public interface TaskRepository extends CrudRepository<Task, Integer> {
             "where t.status = 'Finished'\n" +
             "AND t.id in (:dataInMonth)\n"+
             "group by u.username\n", nativeQuery = true)
-    List<ModelExcelUser> getListTaskFinished(List<Integer> dataInMonth);
+    List<ModelExcelUser> getListTaskFinished(List<Long> dataInMonth);
 
 
     @Query(value = "SELECT t.id FROM pa_tasks t", nativeQuery = true)
-    List<Integer> findAllId();
+    List<Long> findAllId();
 
     @Query(value = "SELECT t.created_date FROM pa_tasks t", nativeQuery = true)
     List<Timestamp> findAllCreatedDate();
@@ -70,7 +70,7 @@ public interface TaskRepository extends CrudRepository<Task, Integer> {
             "join pa_tasks ta\n" +
             "ON p.id = ta.project_id\n" +
             "Where ta.status <> 'Finished') AND ta.id in (:dataInMonth)",nativeQuery = true)
-    List<ModelTeam> findProjectFinished(List<Integer> dataInMonth);
+    List<ModelTeam> findProjectFinished(List<Long> dataInMonth);
 
     @Query(value = "SELECT distinct d.name from pa_departments d JOIN pa_team_users tu ON d.id = tu.department_id JOIN pa_teams t ON tu.team_id = t.id WHERE t.name = :s", nativeQuery = true)
     List<String> getListDepartmentByTeam(String s);

@@ -15,7 +15,7 @@ public class TeamForm {
     private String description;
     private Boolean enabled;
     private List<Long> departmentIds;
-   private List<Integer> projectIds;
+   private List<Long> projectIds;
     private List<Long> userIds;
 
 }

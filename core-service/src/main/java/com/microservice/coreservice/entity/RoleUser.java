@@ -23,13 +23,13 @@ import java.util.Date;
 public class RoleUser  implements Serializable {
 
     @Id
-    private int user_id;
+    private Long user_id;
 
     @Column(nullable = true)
     @Id
-    private int role_id;
+    private Long role_id;
 
-    public RoleUser(int user_id, int role_id) {
+    public RoleUser(Long user_id, Long role_id) {
         this.user_id = user_id;
         this.role_id = role_id;
     }

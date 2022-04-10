@@ -55,7 +55,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project update(ProjectForm form, int projectId) {
+    public Project update(ProjectForm form, Long projectId) {
         log.info("ProjectService -> update ");
 
         validateUpdateProject(form, projectId);
@@ -67,7 +67,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setEnabled(form.isEnabled());
         project.setUpdated_date(new Timestamp(System.currentTimeMillis()));
 
-        if(form.getTeamId() != 0) {
+        if(form.getTeamId() != null) {
             ProjectTeam projectTeam = (ProjectTeam) projectTeamRepository.findByTeamId(form.getTeamId());
             if(!ObjectUtils.isEmpty(projectTeam)) {
                 projectTeam.setTeam_id(form.getTeamId());
@@ -78,7 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project updateName(String name, int projectId) {
+    public Project updateName(String name, Long projectId) {
         log.info("ProjectService -> updateName ");
 
         ValidateUtils.validateNullOrBlankString(name);
@@ -96,7 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void deleteProject(int projectId) {
+    public void deleteProject(Long projectId) {
         log.info("ProjectService -> deleteProject ");
 
         if(!projectRepository.existsById(projectId)) {
@@ -108,7 +108,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project findProjectById(int projectId) {
+    public Project findProjectById(Long projectId) {
         log.info("ProjectService -> findProjectById ");
 
         if(!projectRepository.existsById(projectId)) {
@@ -142,7 +142,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private void validateUpdateProject(ProjectForm form, int projectId) {
+    private void validateUpdateProject(ProjectForm form, Long projectId) {
         Map<String, String> map = new HashMap<>();
         map.put("name", form.getName());
         map.put("decription", form.getDescription());

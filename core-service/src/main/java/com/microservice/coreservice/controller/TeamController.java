@@ -39,7 +39,7 @@ public class TeamController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> findTeamById(@PathVariable(name = "id") int _teamId) {
+    public ResponseEntity<ApiResponse> findTeamById(@PathVariable(name = "id") Long _teamId) {
         log.info("Team Controler -> findTeamById");
 
         Team team = teamService.findTeamById(_teamId);
@@ -50,7 +50,7 @@ public class TeamController {
     }
 
     @GetMapping()
-    public ResponseEntity<ApiResponse> getTeamLists(@RequestParam(name = "projectId") int _projectId) {
+    public ResponseEntity<ApiResponse> getTeamLists(@RequestParam(name = "projectId") Long _projectId) {
         log.info("Team Controler -> getTeamLists");
 
         List<Team> teams = teamService.getListTeam(_projectId);
@@ -60,7 +60,7 @@ public class TeamController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteTeam(@PathVariable(name = "id") int _teamId) {
+    public ResponseEntity<ApiResponse> deleteTeam(@PathVariable(name = "id") Long _teamId) {
         log.info("Team Controler -> deleteTeam");
 
         teamService.deleteTeam(_teamId);
@@ -69,7 +69,7 @@ public class TeamController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateTeam(@RequestBody TeamForm _form, @PathVariable(name = "id") int _teamId) {
+    public ResponseEntity<ApiResponse> updateTeam(@RequestBody TeamForm _form, @PathVariable(name = "id") Long _teamId) {
         log.info("Team Controler -> updateTeam");
 
         Team team = teamService.updateTeam( _form ,_teamId);
@@ -80,7 +80,7 @@ public class TeamController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateName(@RequestParam(name = "name") String _name, @PathVariable(name = "id") int _teamId) {
+    public ResponseEntity<ApiResponse> updateName(@RequestParam(name = "name") String _name, @PathVariable(name = "id") Long _teamId) {
         log.info("Team Controler -> updateName");
 
         Team team = teamService.updateName( _name ,_teamId);

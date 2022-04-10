@@ -17,10 +17,10 @@ import java.util.Date;
 public class ProjectTeam implements Serializable {
 
     @Id
-    private Integer project_id;
+    private Long project_id;
 
     @Id
-    private int team_id;
+    private Long team_id;
 
     @Column
     private Timestamp created_date;
@@ -28,7 +28,7 @@ public class ProjectTeam implements Serializable {
     @Column
     private Timestamp updated_date;
 
-    public ProjectTeam(Integer project_id, int team_id, Date created_date, Date updated_date) {
+    public ProjectTeam(Long project_id, Long team_id, Date created_date, Date updated_date) {
         this.project_id = project_id;
         this.team_id = team_id;
         this.created_date = new Timestamp(created_date.getTime());

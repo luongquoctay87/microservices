@@ -13,6 +13,6 @@ public class ProjectForm {
     private String name;
     private String description;
     private String type;
-    private int teamId;
+    private Long teamId;
     private boolean enabled;
 }

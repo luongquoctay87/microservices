@@ -18,15 +18,15 @@ public interface TaskService {
 
     Task addNewTask(TaskForm form, String token);
 
-    Task getById(int taskId);
+    Task getById(Long taskId);
 
-    Task updateTask(TaskForm form, int taskId);
+    Task updateTask(TaskForm form, Long taskId);
 
-    Task updateStatus(int id, String status);
+    Task updateStatus(Long id, String status);
 
-    List<Task> getListTask(Integer projectId, Integer sectionId);
+    List<Task> getListTask(Long projectId, Long sectionId);
 
-    void deleteTask(int taskId);
+    void deleteTask(Long taskId);
 
     ByteArrayInputStream exportProgressUser();
 

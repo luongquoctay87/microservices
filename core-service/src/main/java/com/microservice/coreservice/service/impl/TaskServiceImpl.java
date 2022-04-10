@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -62,7 +61,7 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private RedisRepository redisRepository;
 
-    @Autowired
+    @Autowired 
     private EntityManager entityManager;
 
     @Override
@@ -73,9 +72,9 @@ public class TaskServiceImpl implements TaskService {
 
         List<TaskSearchReponse> taskSearchResponseList = new ArrayList<>();
 
-        List<Integer> taskIds = new ArrayList<>();
+        List<Long> taskIds = new ArrayList<>();
         List<Task> tasks = new ArrayList<>();
-        List<Integer> taskList = taskRepository.findAllId();
+        List<Long> taskList = taskRepository.findAllId();
 
         //        Trường hợp người dùng search
         if (request.getTextSearch() != null && request.getFilterBy() == null) {
@@ -366,70 +365,70 @@ public class TaskServiceImpl implements TaskService {
         return new ArrayList<>();
     }
 
+   @Override
+   public Task addNewTask(TaskForm taskForm, String token) {
+       log.info("TaskService -> addNewTask");
+
+       String token1 = token.substring(7);
+       String redisResult = redisRepository.findResdisData(token1);
+       ObjectMapper mapper = new ObjectMapper();
+
+       ResultClass resultClass = null;
+       try {
+           resultClass = mapper.readValue(redisResult, ResultClass.class);
+       } catch (JsonMappingException e) {
+           e.printStackTrace();
+       } catch (JsonGenerationException e) {
+           e.printStackTrace();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+
+       Long userId = resultClass.getUserId();
+
+       validateTaskForm(taskForm);
+
+       Task task = Task.builder()
+               .name(taskForm.getName())
+               .assignee(taskForm.getAssignee())
+               .created_by(userId)
+               .description(taskForm.getJobDescription())
+               .priority(PriorityEnums.valueOf(taskForm.getPriority()))
+               .status(StatusEnums.valueOf(taskForm.getStatus()))
+               .estimate_time(taskForm.getEstimate_time())
+               .start_date(new Timestamp(taskForm.getStartDay()))
+               .end_date(new Timestamp(taskForm.getEndDay()))
+               .created_date(new Timestamp(System.currentTimeMillis()))
+               .build();
+       taskRepository.save(task);
+
+       if (taskForm.getSectionId() != null) {
+           Section section = sectionRepository.findById(taskForm.getSectionId()).get();
+           if (!ObjectUtils.isEmpty(section)) {
+               task.setSection_id(taskForm.getSectionId());
+           }
+       }
+
+       if (taskForm.getProjectId() != null) {
+           Project project = projectRepository.findById(taskForm.getProjectId()).get();
+           if (!ObjectUtils.isEmpty(project)) {
+               task.setProject_id(taskForm.getProjectId());
+           }
+       }
+
+       if (taskForm.getParentId() != null) {
+           Task parent = taskRepository.findById(taskForm.getParentId()).get();
+           if (!ObjectUtils.isEmpty(parent)) {
+               task.setParent_id(taskForm.getParentId());
+           }
+       }
+
+       taskRepository.save(task);
+       return task;
+   }
+
     @Override
-    public Task addNewTask(TaskForm taskForm, String token) {
-        log.info("TaskService -> addNewTask");
-
-        String token1 = token.substring(7);
-        String redisResult = redisRepository.findResdisData(token1);
-        ObjectMapper mapper = new ObjectMapper();
-
-        ResultClass resultClass = null;
-        try {
-            resultClass = mapper.readValue(redisResult, ResultClass.class);
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (JsonGenerationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Long id = resultClass.getUserId();
-        int userId = id.intValue();
-        validateTaskForm(taskForm);
-
-        Task task = Task.builder()
-                .name(taskForm.getName())
-                .assignee(taskForm.getAssignee())
-                .created_by(userId)
-                .description(taskForm.getJobDescription())
-                .priority(PriorityEnums.valueOf(taskForm.getPriority()))
-                .status(StatusEnums.valueOf(taskForm.getStatus()))
-                .estimate_time(taskForm.getEstimate_time())
-                .start_date(new Timestamp(taskForm.getStartDay()))
-                .end_date(new Timestamp(taskForm.getEndDay()))
-                .created_date(new Timestamp(System.currentTimeMillis()))
-                .build();
-        taskRepository.save(task);
-
-        if (taskForm.getSectionId() != null) {
-            Section section = sectionRepository.findById(taskForm.getSectionId()).get();
-            if (!ObjectUtils.isEmpty(section)) {
-                task.setSection_id(taskForm.getSectionId());
-            }
-        }
-
-        if (taskForm.getProjectId() != null) {
-            Project project = projectRepository.findById(taskForm.getProjectId()).get();
-            if (!ObjectUtils.isEmpty(project)) {
-                task.setProject_id(taskForm.getProjectId());
-            }
-        }
-
-        if (taskForm.getParentId() != 0) {
-            Task parent = taskRepository.findById(taskForm.getParentId()).get();
-            if (!ObjectUtils.isEmpty(parent)) {
-                task.setParent_id(taskForm.getParentId());
-            }
-        }
-
-        taskRepository.save(task);
-        return task;
-    }
-
-    @Override
-    public Task getById(int taskId) {
+    public Task getById(Long taskId) {
         log.info("TaskService -> getById");
 
         Task task = taskRepository.findById(taskId).get();
@@ -442,7 +441,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(TaskForm taskForm, int taskId) {
+    public Task updateTask(TaskForm taskForm, Long taskId) {
         log.info("TaskService -> updateTask");
 
         validateUpdateTask(taskForm, taskId);
@@ -452,20 +451,20 @@ public class TaskServiceImpl implements TaskService {
         if (task != null) {
             task.setName(taskForm.getName());
             task.setDescription(taskForm.getJobDescription());
-            task.setAssignee(taskForm.getAssignee());
+            task.setAssignee(taskForm.getAssignee() != null ? taskForm.getAssignee() : null);
             task.setUpdated_date(new Timestamp(System.currentTimeMillis()));
-            task.setStart_date(new Timestamp(taskForm.getStartDay()));
-            task.setEnd_date(new Timestamp(taskForm.getEndDay()));
-            task.setPriority(PriorityEnums.valueOf(taskForm.getPriority()));
-            task.setStatus(StatusEnums.valueOf(taskForm.getStatus()));
-            task.setEstimate_time((taskForm.getEstimate_time()));
+            task.setStart_date(new Timestamp(taskForm.getStartDay() != null ? taskForm.getStartDay() : task.getStart_date().getTime()));
+            task.setEnd_date(new Timestamp(taskForm.getEndDay() != null ? taskForm.getEndDay() : task.getEnd_date().getTime()));
+            task.setPriority(PriorityEnums.valueOf(taskForm.getPriority() != null ? taskForm.getPriority() : task.getPriority().name()));
+            task.setStatus(StatusEnums.valueOf(taskForm.getStatus() != null ? taskForm.getStatus() : task.getStatus().name()));
+            task.setEstimate_time((!ObjectUtils.isEmpty(taskForm.getEstimate_time()) ? taskForm.getEstimate_time() : task.getEstimate_time()));
             taskRepository.save(task);
         }
         return task;
     }
 
     @Override
-    public Task updateStatus(int id, String status) {
+    public Task updateStatus(Long id, String status) {
         log.info("TaskService -> updateStatus");
 
         Task task = taskRepository.findById(id).get();
@@ -478,7 +477,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getListTask(Integer projectId, Integer sectionId) {
+    public List<Task> getListTask(Long projectId, Long sectionId) {
         log.info("TaskService -> getListTask");
 
         Project project = null;
@@ -491,7 +490,7 @@ public class TaskServiceImpl implements TaskService {
             project = projectRepository.findById(projectId).get();
 
         }
-        if (sectionId != 0) {
+        if (sectionId != null) {
             if (!sectionRepository.existsById(sectionId)) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy giai đoạn");
             }
@@ -518,7 +517,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(int taskId) {
+    public void deleteTask(Long taskId) {
         log.info("TaskService -> deleteTask");
 
         Task task = taskRepository.findById(taskId).get();
@@ -531,10 +530,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ByteArrayInputStream exportProgressUser() {
 
-        List<Integer> listTaskIds=  taskRepository.findAllId();
+        List<Long> listTaskIds=  taskRepository.findAllId();
         List<Timestamp> listCreatedDate=  taskRepository.findAllCreatedDate();
 
-        List<Integer> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
+        List<Long> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
         List<ModelExcelUser> data = taskRepository.getListTaskFinished(dataInMonth);
         ByteArrayInputStream in = ExcelHelper.userExportToExcel(data);
         return in;
@@ -542,23 +541,23 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ByteArrayInputStream exportProgressTeam() {
-        List<Integer> listTaskIds=  taskRepository.findAllId();
+        List<Long> listTaskIds=  taskRepository.findAllId();
         List<Timestamp> listCreatedDate=  taskRepository.findAllCreatedDate();
 
-        List<Integer> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
+        List<Long> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
         List<ModelExcelTeam> data = getListProjectFinished(dataInMonth);
         ByteArrayInputStream in = ExcelHelper.teamExportToExcel(data);
         return in;
     }
 
-    private List<Integer> getListDataByMonthNow(List<Timestamp> listCreatedDate, List<Integer> listTaskIds) {
+    private List<Long> getListDataByMonthNow(List<Timestamp> listCreatedDate, List<Long> listTaskIds) {
 
         if (listTaskIds != null && listCreatedDate != null) {
             List<Long> taskCreatedDay = listCreatedDate.stream().map(Timestamp::getTime).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
                 LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 int monthNow = dateNow.getMonthValue();
-                List<Integer> taskIds = new ArrayList<>();
+                List<Long> taskIds = new ArrayList<>();
                 for (int i = 0; i < taskCreatedDay.size(); i++) {
                     Date date = new Date(taskCreatedDay.get(i));
                     LocalDate localDateOfT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -575,7 +574,7 @@ public class TaskServiceImpl implements TaskService {
         return new ArrayList<>();
     }
 
-    private List<ModelExcelTeam> getListProjectFinished(List<Integer> dataInMonth) {
+    private List<ModelExcelTeam> getListProjectFinished(List<Long> dataInMonth) {
 
         List<ModelTeam> listData = taskRepository.findProjectFinished(dataInMonth);
 
@@ -618,7 +617,7 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private void validateUpdateTask(TaskForm taskForm, int taskId) {
+    private void validateUpdateTask(TaskForm taskForm, Long taskId) {
 
         HashMap<String, String> map = new HashMap<>();
         map.put("Tên dự án", taskForm.getName());

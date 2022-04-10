@@ -10,15 +10,15 @@ public class TaskForm {
 
     private String name;
 
-    private int assignee;
+    private Long assignee;
     private Long startDay;
     private Long endDay;
     private String priority;
     private String jobDescription;
     private String status;
-    private int parentId;
-    private Integer projectId;
-    private Integer sectionId;
+    private Long parentId;
+    private Long projectId;
+    private Long sectionId;
     private float estimate_time;
 
 }

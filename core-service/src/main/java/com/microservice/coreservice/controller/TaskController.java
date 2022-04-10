@@ -56,7 +56,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getTaskById(@PathVariable(name = "id") int _taskId) {
+    public ResponseEntity<ApiResponse> getTaskById(@PathVariable(name = "id") Long _taskId) {
         log.info("Task Controler -> getTaskById");
 
         Task task = taskService.getById(_taskId);
@@ -67,7 +67,7 @@ public class TaskController {
     }
 
     @GetMapping()
-    public ResponseEntity<ApiResponse> getListTask(@RequestParam(name = "projectId", required = false) Integer _projectId, @RequestParam(name = "sectionId", required = false, defaultValue = "0") Integer _sectionId) {
+    public ResponseEntity<ApiResponse> getListTask(@RequestParam(name = "projectId", required = false) Long _projectId, @RequestParam(name = "sectionId", required = false, defaultValue = "0") Long _sectionId) {
         log.info("Task Controler -> getListTask");
 
         List<Task> tasks = taskService.getListTask(_projectId, _sectionId);
@@ -78,7 +78,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateStatus(@PathVariable(name = "id") int _id, @RequestParam(name = "status") String _status) {
+    public ResponseEntity<ApiResponse> updateStatus(@PathVariable(name = "id") Long _id, @RequestParam(name = "status") String _status) {
         log.info("Task Controler -> updateStatus");
 
         Task task = taskService.updateStatus(_id, _status);
@@ -89,7 +89,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteTask(@PathVariable(name = "id") int _id) {
+    public ResponseEntity<ApiResponse> deleteTask(@PathVariable(name = "id") Long _id) {
         log.info("Task Controler -> deleteTask");
 
         taskService.deleteTask(_id);
@@ -98,7 +98,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateTask(@RequestBody TaskForm _form, @PathVariable(name = "id") int _taskId) {
+    public ResponseEntity<ApiResponse> updateTask(@RequestBody TaskForm _form, @PathVariable(name = "id") Long _taskId) {
         log.info("Task Controler -> updateTask");
 
         Task task = taskService.updateTask(_form, _taskId);

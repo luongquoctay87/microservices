@@ -36,7 +36,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> findProjectById(@PathVariable(name = "id") int _projectId) {
+    public ResponseEntity<ApiResponse> findProjectById(@PathVariable(name = "id") Long _projectId) {
         log.info("ProjectControler -> findProjectById");
 
         Project project = projectService.findProjectById(_projectId);
@@ -58,7 +58,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteProject(@PathVariable(name = "id") int _projectId) {
+    public ResponseEntity<ApiResponse> deleteProject(@PathVariable(name = "id") Long _projectId) {
         log.info("ProjectControler -> deleteProject");
 
         projectService.deleteProject(_projectId);
@@ -67,7 +67,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateProject(@RequestBody ProjectForm _form, @PathVariable(name = "id") int _projectId) {
+    public ResponseEntity<ApiResponse> updateProject(@RequestBody ProjectForm _form, @PathVariable(name = "id") Long _projectId) {
         log.info("ProjectControler -> updateProject");
 
         Project project = projectService.update(_form, _projectId);
@@ -78,7 +78,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateNameProject(@RequestParam(name = "name") String _projectName, @PathVariable(name = "id") int _projectId) {
+    public ResponseEntity<ApiResponse> updateNameProject(@RequestParam(name = "name") String _projectName, @PathVariable(name = "id") Long _projectId) {
         log.info("ProjectControler -> updateNameProject");
 
         Project project = projectService.updateName(_projectName, _projectId);

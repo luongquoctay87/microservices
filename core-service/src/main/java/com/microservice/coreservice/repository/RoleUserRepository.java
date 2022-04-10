@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 
-public interface RoleUserRepository extends CrudRepository<RoleUser, Integer> {
+public interface RoleUserRepository extends CrudRepository<RoleUser, Long> {
 
 
 }
