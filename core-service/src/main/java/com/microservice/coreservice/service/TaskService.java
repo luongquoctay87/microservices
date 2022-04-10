@@ -30,4 +30,6 @@ public interface TaskService {
 
     ByteArrayInputStream exportProgressUser();
 
+    ByteArrayInputStream exportProgressTeam();
+
 }

@@ -118,4 +118,14 @@ public class TaskController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
     }
+
+    @GetMapping("/export/teams")
+    public ResponseEntity<?> exportProgressTeamToExcel() {
+        String filename = "teams.xlsx";
+        InputStreamResource file = new InputStreamResource(taskService.exportProgressTeam());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);
+    }
 }

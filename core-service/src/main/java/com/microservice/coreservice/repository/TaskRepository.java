@@ -2,6 +2,7 @@ package com.microservice.coreservice.repository;
 
 import com.microservice.coreservice.constants.StatusEnums;
 import com.microservice.coreservice.domain.model.ModelExcelUser;
+import com.microservice.coreservice.domain.model.ModelTeam;
 import com.microservice.coreservice.entity.Task;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -52,5 +53,25 @@ public interface TaskRepository extends CrudRepository<Task, Integer> {
 
     @Query(value = "SELECT t.created_date FROM pa_tasks t", nativeQuery = true)
     List<Timestamp> findAllCreatedDate();
+    
 
+    @Query(value = "select distinct t.name as team, p.name as project\n" +
+            "from pa_teams t\n" +
+            "join pa_team_users tu\n" +
+            " on t.id = tu.team_id\n" +
+            "join pa_departments d\n" +
+            "on tu.department_id = d.id\n" +
+            "join pa_projects p\n" +
+            "join pa_tasks ta\n" +
+            "on p.id = ta.project_id\n" +
+            "where\n" +
+            "p.name not in (\n" +
+            "SELECT distinct(p.name) FROM pa_projects p\n" +
+            "join pa_tasks ta\n" +
+            "ON p.id = ta.project_id\n" +
+            "Where ta.status <> 'Finished') AND ta.id in (:dataInMonth)",nativeQuery = true)
+    List<ModelTeam> findProjectFinished(List<Integer> dataInMonth);
+
+    @Query(value = "SELECT distinct d.name from pa_departments d JOIN pa_team_users tu ON d.id = tu.department_id JOIN pa_teams t ON tu.team_id = t.id WHERE t.name = :s", nativeQuery = true)
+    List<String> getListDepartmentByTeam(String s);
 }

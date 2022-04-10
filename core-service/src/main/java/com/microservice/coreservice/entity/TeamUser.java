@@ -21,10 +21,10 @@ public class TeamUser implements Serializable {
     private int team_id;
 
     @Column
-    private int department_id;
+    private Long department_id;
 
     @Id
-    private int user_id;
+    private Long user_id;
 
     @Column
     private Timestamp created_date;
@@ -32,7 +32,7 @@ public class TeamUser implements Serializable {
     @Column
     private Timestamp updated_date;
 
-    public TeamUser(int team_id, int department_id, int user_id, Date created_date, Date updated_date) {
+    public TeamUser(int team_id, Long department_id, Long user_id, Date created_date, Date updated_date) {
         this.team_id = team_id;
         this.department_id = department_id;
         this.user_id = user_id;

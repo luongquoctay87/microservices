@@ -67,7 +67,7 @@ public class TeamServiceImpl implements TeamService {
 
         if(form.getUserIds().size() > 0 && form.getDepartmentIds().size() > 0) {
 
-            HashMap<Integer, Integer> map = new HashMap<>();
+            HashMap<Integer, Long> map = new HashMap<>();
 
             form.getDepartmentIds().forEach(id -> {
                 Integer keyMap = 0;
@@ -126,7 +126,7 @@ public class TeamServiceImpl implements TeamService {
 
         if(form.getUserIds().size() > 0 && form.getDepartmentIds().size() > 0) {
 
-            HashMap<Integer, Integer> map = new HashMap<>();
+            HashMap<Integer, Long> map = new HashMap<>();
 
             form.getDepartmentIds().forEach(id -> {
                 Integer keyMap = 0;

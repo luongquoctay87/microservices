@@ -9,7 +9,9 @@ import com.microservice.coreservice.constants.StatusEnums;
 import com.microservice.coreservice.domain.dto.TaskSearchReponse;
 import com.microservice.coreservice.domain.form.TaskForm;
 import com.microservice.coreservice.domain.form.TaskSearchForm;
+import com.microservice.coreservice.domain.model.ModelExcelTeam;
 import com.microservice.coreservice.domain.model.ModelExcelUser;
+import com.microservice.coreservice.domain.model.ModelTeam;
 import com.microservice.coreservice.domain.model.ResultClass;
 import com.microservice.coreservice.entity.Project;
 import com.microservice.coreservice.entity.Section;
@@ -538,6 +540,17 @@ public class TaskServiceImpl implements TaskService {
         return in;
     }
 
+    @Override
+    public ByteArrayInputStream exportProgressTeam() {
+        List<Integer> listTaskIds=  taskRepository.findAllId();
+        List<Timestamp> listCreatedDate=  taskRepository.findAllCreatedDate();
+
+        List<Integer> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
+        List<ModelExcelTeam> data = getListProjectFinished(dataInMonth);
+        ByteArrayInputStream in = ExcelHelper.teamExportToExcel(data);
+        return in;
+    }
+
     private List<Integer> getListDataByMonthNow(List<Timestamp> listCreatedDate, List<Integer> listTaskIds) {
 
         if (listTaskIds != null && listCreatedDate != null) {
@@ -562,6 +575,36 @@ public class TaskServiceImpl implements TaskService {
         return new ArrayList<>();
     }
 
+    private List<ModelExcelTeam> getListProjectFinished(List<Integer> dataInMonth) {
+
+        List<ModelTeam> listData = taskRepository.findProjectFinished(dataInMonth);
+
+        List<String> teams =  listData.stream().map(ModelTeam::getTeam).collect(Collectors.toList());
+        Map<String, Integer> frequencyMap = new HashMap<>();
+        for(String team : teams) {
+            if(frequencyMap.containsKey(team)) {
+                frequencyMap.put(team, frequencyMap.get(team) + 1);
+            }else {
+                frequencyMap.put(team, 1);
+            }
+        }
+
+        List<ModelExcelTeam> modelExcelTeams = new ArrayList<>();
+
+        for (int i = 0; i < frequencyMap.size() ; i++) {
+            List<String> keys =   frequencyMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+            List<String> listDepartment = taskRepository.getListDepartmentByTeam(keys.get(i));
+            String department = listDepartment.stream().map(Objects::toString).collect(Collectors.joining(","));
+            ModelExcelTeam modelExcelTeam = ModelExcelTeam.builder()
+                    .team(keys.get(i))
+                    .department(department)
+                    .amountProjectDone(frequencyMap.get(keys.get(i)))
+                    .build();
+            modelExcelTeams.add(modelExcelTeam);
+        }
+        return modelExcelTeams;
+    }
+
     private void validateTaskForm(TaskForm taskForm) {
         HashMap<String, String> map = new HashMap<>();
         map.put("Tên dự án", taskForm.getName());
@@ -573,7 +616,6 @@ public class TaskServiceImpl implements TaskService {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy dự án");
             }
         }
-
     }
 
     private void validateUpdateTask(TaskForm taskForm, int taskId) {
