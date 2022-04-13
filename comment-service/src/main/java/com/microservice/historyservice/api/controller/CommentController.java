@@ -34,14 +34,16 @@ public class CommentController {
     }
 
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> save(@Valid @RequestBody CommentDto _commentDto) {
-        Comment comment = commentService.save(_commentDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Tạo thành công");
+    @PostMapping
+    public ResponseEntity<Void> createComment(@Valid @RequestBody CommentDto _commentDto) {
+        Optional<Comment> comment = Optional.ofNullable(commentService.save(_commentDto));
+        if (!comment.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>( HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping("/{id}")
     public ResponseEntity<String> edit(@PathVariable("id") Long _id, @RequestBody @Valid CommentContent _commentContent, BindingResult bindingResult) {
         if (!commentService.edit(_id, _commentContent)) {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
@@ -81,9 +83,10 @@ public class CommentController {
         }
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
+
     @GetMapping("/user/{id}")
     public ResponseEntity<String> findNameById(@PathVariable("id") Long _id) {
-        String name= commentService.findNameByUserId(_id);
+        String name = commentService.findNameByUserId(_id);
         if (name.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

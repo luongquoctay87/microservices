@@ -29,11 +29,11 @@ public class FileLinkServiceImpl implements FileLinkService {
     }
 
     @Override
-    public Boolean edit(Long id, FileLink _fileLink) {
-       Optional<FileLink> fileLink = findById(id);
-       if(fileLink.isPresent()){
-           _fileLink.setId(id);
-           fileLinkRepository.save(_fileLink);
+    public Boolean edit(Long id, FileLink fileLink) {
+       Optional<FileLink> fileLinkOptional = findById(id);
+       if(fileLinkOptional.isPresent()){
+           fileLink.setId(id);
+           fileLinkRepository.save(fileLink);
            return true;
        }
 
