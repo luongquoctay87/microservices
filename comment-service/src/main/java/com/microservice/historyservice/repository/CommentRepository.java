@@ -9,16 +9,13 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends PagingAndSortingRepository<Comment,Long> {
-    @Query(value = "SELECT * FROM pa_task_management.pa_comments where task_id = :id  AND enabled = 1 ORDER BY  id DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM Comment where taskId = :id  AND enabled = 1 ORDER BY  id DESC")
     List<Comment> findAllByTaskId(Long id);
 
-    @Query(value = "SELECT * FROM pa_task_management.pa_comments where reply_id = :replyId AND enabled = 1 ORDER BY  id DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM Comment where replyId = :replyId AND enabled = 1 ORDER BY  id DESC")
     List<Comment> findAllByReplyId(Long replyId);
 
-    @Query(value = "select pa_users.username from pa_users  where id = :userId ", nativeQuery = true)
-    String findNameByUserId(Long userId);
-
-    @Query(value = "SELECT COUNT(*) FROM pa_task_management.pa_comments Where reply_id = :replyId", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM Comment Where replyId = :replyId")
     Long countReplyId(Long replyId);
 
 }

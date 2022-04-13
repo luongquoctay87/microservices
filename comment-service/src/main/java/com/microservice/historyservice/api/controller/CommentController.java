@@ -7,7 +7,6 @@ import com.microservice.historyservice.model.entity.Comment;
 import com.microservice.historyservice.service.impl.CommentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +86,9 @@ public class CommentController {
     @GetMapping("/user/{id}")
     public ResponseEntity<String> findNameById(@PathVariable("id") Long _id) {
         String name = commentService.findNameByUserId(_id);
+        if (name == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         if (name.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

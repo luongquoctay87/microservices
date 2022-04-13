@@ -26,7 +26,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public List<HistoryForm> findByTaskId(Long id) {
         List<History> histories = historyRepository.findAllByTaskId(id);
-        List<HistoryForm> historyForms = histories.stream().map(h ->convertHistoryToForm(h)).collect(Collectors.toList());
+        List<HistoryForm> historyForms = histories.stream().map(h -> convertHistoryToForm(h)).collect(Collectors.toList());
         return historyForms;
     }
 
@@ -45,7 +45,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public HistoryForm convertHistoryToForm(History history) {
-        HistoryForm historyForm =  new HistoryForm();
+        HistoryForm historyForm = new HistoryForm();
         historyForm.setUserId(history.getUserId());
         historyForm.setActions(history.getActions());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-DD HH:MM:SS");
@@ -56,7 +56,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public User findByUserId(Long id) {
-        User user = restTemplate.getForObject(String.format("http://localhost:9002/users/%s", id),User.class);
+        User user = restTemplate.getForObject(String.format("http://localhost:9002/users/%s", id), User.class);
         return user;
     }
 
