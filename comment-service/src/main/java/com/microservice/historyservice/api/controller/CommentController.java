@@ -46,22 +46,22 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<String> editComment(@PathVariable("id") Long _id, @RequestBody @Valid CommentContent _commentContent, BindingResult bindingResult) {
         if (!commentService.edit(_id, _commentContent)) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-                    .body("ERROR trong quá trình tạo ngày hoăc không tìm thấy id");
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
         }
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Edit thành công");
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable("id") Long _id) {
+    public ResponseEntity<Void> deleteComment(@PathVariable("id") Long _id) {
         Boolean check = commentService.hide(_id);
         if (check) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("Edit thành công");
+            return new ResponseEntity<>(HttpStatus.OK);
+
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("ERROR không tìm thấy id ");
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
 
     }
 
