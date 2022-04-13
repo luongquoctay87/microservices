@@ -17,5 +17,8 @@ public interface CommentService {
     Comment convertDtoToComment(CommentDto commentDto);
     CommentForm convertCommentToForm(Comment comment);
     Boolean edit(Long id, CommentContent commentContent);
+    String findNameByUserId(Long userId);
+    Long countReplyId(Long replyId);
+
 
 }

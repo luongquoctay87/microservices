@@ -7,4 +7,5 @@ public class CommentForm {
     private String createdDate;
     private String updatedDate;
     private Long userId;
+    private Long countReplyId;
 }

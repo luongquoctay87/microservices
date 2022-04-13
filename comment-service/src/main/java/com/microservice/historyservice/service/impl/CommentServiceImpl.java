@@ -90,6 +90,7 @@ public class CommentServiceImpl implements CommentService {
             return commentForm;
         }
         commentForm.setUpdatedDate( ConvertDate.convertDateToString(_comment.getUpdatedDate()));
+        commentForm.setCountReplyId(countReplyId(_comment.getId()));
         return commentForm;
     }
 
@@ -107,6 +108,17 @@ public class CommentServiceImpl implements CommentService {
         }
         commentRepository.save(comment.get());
         return true;
+    }
+
+
+    @Override
+    public String findNameByUserId(Long userId) {
+        return commentRepository.findNameByUserId(userId);
+    }
+
+    @Override
+    public Long countReplyId(Long replyId) {
+        return commentRepository.countReplyId(replyId);
     }
 
 }

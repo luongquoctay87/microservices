@@ -1,13 +1,14 @@
 package com.microservice.historyservice.service.impl;
 
+import com.microservice.historyservice.VO.User;
 import com.microservice.historyservice.api.form.HistoryForm;
 import com.microservice.historyservice.model.dao.HistoryDto;
 import com.microservice.historyservice.model.entity.History;
 import com.microservice.historyservice.repository.HistoryRepository;
 import com.microservice.historyservice.service.HistoryService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -19,7 +20,8 @@ public class HistoryServiceImpl implements HistoryService {
     @Autowired
     private HistoryRepository historyRepository;
     @Autowired
-    private ModelMapper modelMapper;
+    private RestTemplate restTemplate;
+
 
     @Override
     public List<HistoryForm> findByTaskId(Long id) {
@@ -53,8 +55,9 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public String findNameByUserId(Long userId) {
-        return historyRepository.findNameByUserId(userId);
+    public User findByUserId(Long id) {
+        User user = restTemplate.getForObject(String.format("http://localhost:9002/users/%s", id),User.class);
+        return user;
     }
 
 }

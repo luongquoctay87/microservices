@@ -31,12 +31,13 @@ public class FileLinkServiceImpl implements FileLinkService {
     @Override
     public Boolean edit(Long id, FileLink _fileLink) {
        Optional<FileLink> fileLink = findById(id);
-       if(!fileLink.isPresent()){
-           return false;
+       if(fileLink.isPresent()){
+           _fileLink.setId(id);
+           fileLinkRepository.save(_fileLink);
+           return true;
        }
-       _fileLink.setId(id);
-       fileLinkRepository.save(_fileLink);
-        return true;
+
+        return false;
     }
 
     @Override

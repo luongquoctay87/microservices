@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/comments")
+@CrossOrigin("*")
 public class CommentController {
     @Autowired
     private CommentServiceImpl commentService;
@@ -36,11 +37,7 @@ public class CommentController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> save(@Valid @RequestBody CommentDto _commentDto) {
         Comment comment = commentService.save(_commentDto);
-        if (comment.getCreatedDate() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("ERROR trong quá trình tạo ngày");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body("Tạo thành công");
     }
 
@@ -83,5 +80,13 @@ public class CommentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
+    @GetMapping("/user/{id}")
+    public ResponseEntity<String> findNameById(@PathVariable("id") Long _id) {
+        String name= commentService.findNameByUserId(_id);
+        if (name.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(name, HttpStatus.OK);
     }
 }

@@ -30,7 +30,7 @@ $ jar -jav .\target\{serviceName}.0.0.SNAPSHORT.jar
     2. $ docker-compose up -d
 ```
 3. service-registry
-4. cloud-config-serverc
+4. cloud-config-server
 5. cloud-gateway
 6. hystrix-dashboard
 7. auth-server
