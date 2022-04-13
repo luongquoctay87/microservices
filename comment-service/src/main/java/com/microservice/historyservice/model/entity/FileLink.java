@@ -16,5 +16,5 @@ public class FileLink {
     private Long commentId;
     @Column(name="link_file")
     @NotNull(message = "không được để trống")
-    private String linkFile;
+    private String url;
 }

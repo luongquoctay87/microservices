@@ -21,7 +21,7 @@ public class HistoryController {
     private HistoryServiceImpl historyService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<HistoryForm>> findAllByTaskId(@PathVariable("id") Long _id) {
+    public ResponseEntity<List<HistoryForm>> findAllHistoryByTaskId(@PathVariable("id") Long _id) {
         List<HistoryForm> historyForms = historyService.findByTaskId(_id);
         if (historyForms.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

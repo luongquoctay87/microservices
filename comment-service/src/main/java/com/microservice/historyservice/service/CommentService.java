@@ -10,14 +10,23 @@ import java.util.Optional;
 
 public interface CommentService {
     Optional<Comment> findById(Long id);
-    List<CommentForm>findAllByTaskId(Long taskId);
-    List<CommentForm>findAllByReplyId(Long replyId);
+
+    List<CommentForm> findAllByTaskId(Long taskId);
+
+    List<CommentForm> findAllByReplyId(Long replyId);
+
     Comment save(CommentDto commentDto);
-    Boolean hide(Long id);
+
+    boolean hide(Long id);
+
     Comment convertDtoToComment(CommentDto commentDto);
+
     CommentForm convertCommentToForm(Comment comment);
+
     Boolean edit(Long id, CommentContent commentContent);
+
     String findNameByUserId(Long userId);
+
     Long countReplyId(Long replyId);
 
 

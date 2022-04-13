@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface FileLinkService {
     List<FileLink> findAllByCommentId(Long commentId);
+
     FileLink save(FileLink fileLink);
+
     void delete(Long id);
+
     Boolean edit(Long id, FileLink fileLink);
-    Optional<FileLink>findById(Long id);
+
+    Optional<FileLink> findById(Long id);
 }

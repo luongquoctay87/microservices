@@ -23,7 +23,7 @@ public class CommentController {
     private CommentServiceImpl commentService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommentForm> findById(@PathVariable("id") Long _id) {
+    public ResponseEntity<CommentForm> findCommentById(@PathVariable("id") Long _id) {
         Optional<Comment> commentOptional = commentService.findById(_id);
         if (!commentOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -46,22 +46,17 @@ public class CommentController {
     public ResponseEntity<String> editComment(@PathVariable("id") Long _id, @RequestBody @Valid CommentContent _commentContent, BindingResult bindingResult) {
         if (!commentService.edit(_id, _commentContent)) {
             return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
         }
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@PathVariable("id") Long _id) {
-        Boolean check = commentService.hide(_id);
+        boolean check = commentService.hide(_id);
         if (check) {
             return new ResponseEntity<>(HttpStatus.OK);
-
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-
     }
 
     @GetMapping("/reply/{id}")
@@ -98,5 +93,6 @@ public class CommentController {
     @GetMapping("/countReply/{id}")
     public ResponseEntity<Long> countReplyId(@PathVariable("id") Long _id) {
         Long count = commentService.countReplyId(_id);
-        return new ResponseEntity<>(count, HttpStatus.OK);    }
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
 }

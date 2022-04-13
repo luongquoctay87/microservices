@@ -32,9 +32,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentForm> findAllByTaskId(Long _taskId) {
         List<Comment> comments = commentRepository.findAllByTaskId(_taskId);
-        List<CommentForm> commentFormList = comments.stream()
-                .map(c -> convertCommentToForm(c))
-                .collect(Collectors.toList());
+        List<CommentForm> commentFormList = comments.stream().map(c -> convertCommentToForm(c)).collect(Collectors.toList());
         return commentFormList;
 
     }
@@ -43,9 +41,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentForm> findAllByReplyId(Long _replyId) {
         List<Comment> comments = commentRepository.findAllByReplyId(_replyId);
-        List<CommentForm> commentFormList = comments.stream()
-                .map(c -> convertCommentToForm(c))
-                .collect(Collectors.toList());
+        List<CommentForm> commentFormList = comments.stream().map(c -> convertCommentToForm(c)).collect(Collectors.toList());
         return commentFormList;
     }
 
@@ -58,16 +54,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Boolean hide(Long _id) {
+    public boolean hide(Long _id) {
         Optional<Comment> comment = commentRepository.findById(_id);
         if (!comment.isPresent()) {
             return false;
         }
-        if (comment.get().getEnabled()) {
-            comment.get().setEnabled(false);
-        } else {
-            comment.get().setEnabled(true);
-        }
+        boolean enabled = comment.get().getEnabled() == true ? false : true;
+        comment.get().setEnabled(enabled);
         commentRepository.save(comment.get());
         return true;
     }

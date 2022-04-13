@@ -26,13 +26,13 @@ public class FileLinkController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody @Valid FileLink _fileLink) {
+    public ResponseEntity<Void> createFileLink(@RequestBody @Valid FileLink _fileLink) {
         fileLinkService.save(_fileLink);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> edit(@PathVariable("id") Long _id, @RequestBody @Valid FileLink _fileLink){
+    public ResponseEntity<Void> editFileLink(@PathVariable("id") Long _id, @RequestBody @Valid FileLink _fileLink){
         if(fileLinkService.edit(_id,_fileLink) == false){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -40,7 +40,7 @@ public class FileLinkController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>delete(@PathVariable("id") Long _id){
+    public ResponseEntity<Void>deleteFileLink(@PathVariable("id") Long _id){
         fileLinkService.delete(_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
