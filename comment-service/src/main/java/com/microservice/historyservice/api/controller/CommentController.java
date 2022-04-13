@@ -44,7 +44,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> edit(@PathVariable("id") Long _id, @RequestBody @Valid CommentContent _commentContent, BindingResult bindingResult) {
+    public ResponseEntity<String> editComment(@PathVariable("id") Long _id, @RequestBody @Valid CommentContent _commentContent, BindingResult bindingResult) {
         if (!commentService.edit(_id, _commentContent)) {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                     .body("ERROR trong quá trình tạo ngày hoăc không tìm thấy id");
@@ -54,7 +54,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long _id) {
+    public ResponseEntity<String> deleteComment(@PathVariable("id") Long _id) {
         Boolean check = commentService.hide(_id);
         if (check) {
             return ResponseEntity.status(HttpStatus.OK)
