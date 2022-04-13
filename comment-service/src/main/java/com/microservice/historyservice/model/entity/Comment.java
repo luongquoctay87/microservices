@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name="pa_comments")
+@Entity
+@Table(name="pa_comments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -20,6 +20,7 @@ public class GatewayConfig {
                 .route("auth", r -> r.path("/api/v1/auth/**").filters(f -> f.filter(filter)).uri("lb://AUTH-SERVER"))
                 .route("departments", r -> r.path("/api/v1/departments/**").filters(f -> f.filter(filter)).uri("lb://DEPARTMENT-SERVICE"))
                 .route("users", r -> r.path("/api/v1/users/**").filters(f -> f.filter(filter)).uri("lb://USER-SERVICE"))
+                .route("comments", r -> r.path("/api/v1/comments/**").filters(f -> f.filter(filter)).uri("lb://COMMENT-SERVICE"))
                 .build();
     }
 

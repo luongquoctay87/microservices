@@ -39,7 +39,7 @@ public class CommentController {
         if (!comment.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>( HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -86,7 +86,7 @@ public class CommentController {
     @GetMapping("/user/{id}")
     public ResponseEntity<String> findNameById(@PathVariable("id") Long _id) {
         String name = commentService.findNameByUserId(_id);
-        if (name == null){
+        if (name == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if (name.isEmpty()) {
@@ -94,4 +94,9 @@ public class CommentController {
         }
         return new ResponseEntity<>(name, HttpStatus.OK);
     }
+
+    @GetMapping("/countReply/{id}")
+    public ResponseEntity<Long> countReplyId(@PathVariable("id") Long _id) {
+        Long count = commentService.countReplyId(_id);
+        return new ResponseEntity<>(count, HttpStatus.OK);    }
 }
