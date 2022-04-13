@@ -32,18 +32,19 @@ public class User {
     @Column(name = "department_id")
     private long departmentId;
 
-    @Column
-    private Timestamp created_date;
+    @Column(name = "creatd_date")
+    private Timestamp createdDate;
 
-    @Column
-    private Timestamp updated_date;
+    @Column(name = "updated_date")
+    private Timestamp updatedDate;
 
     public UserDto toDto() {
         return UserDto.builder()
                 .userId(userId)
                 .username(username)
-                .created_date(created_date)
-                .updated_date(updated_date)
+                .departmentId(departmentId)
+                .createdDate(createdDate)
+                .updatedDate(updatedDate)
                 .build();
     }
 }

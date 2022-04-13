@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     private RestTemplate restTemplate;
 
     @Override
-    public User createNewUser(UserForm form) {
+    public User saveUser(UserForm form) {
         if (!StringUtils.hasText(form.getUsername())) {
             String mess = "Invalid argument";
             throw new BadRequestException(mess);
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(form.getUsername());
 
         if (!ObjectUtils.isEmpty(user)) {
-            String mess = "department-not-exits";
+            String mess = "user-not-exits";
             throw new NotFoundException(mess);
         }
 
@@ -51,13 +51,13 @@ public class UserServiceImpl implements UserService {
                 .departmentId(form.getDepartmentId())
                 .build();
 
-        user.setCreated_date(new Timestamp(System.currentTimeMillis()));
+        user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return save(user);
     }
 
     @Override
-    public User changePassword(String password, long userId) {
+    public User updateDetails(String username, String password, long userId) {
         User user = userRepository.findById(userId).get();
 
         if(ObjectUtils.isEmpty(user)) {
@@ -66,29 +66,8 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(password);
-        user.setUpdated_date(new Timestamp(System.currentTimeMillis()));
-
-        return save(user);
-    }
-
-    @Override
-    public User changeUsername(String username, long userId) {
-        User user = userRepository.findById(userId).get();
-
-        if(ObjectUtils.isEmpty(user)) {
-            String mess = "user-not-exits";
-            throw new NotFoundException(mess);
-        }
-
-        User user1 = userRepository.findByUsername(username);
-
-        if(!ObjectUtils.isEmpty(user1)) {
-            String mess = "user-not-exits";
-            throw new NotFoundException(mess);
-        }
-
         user.setUsername(username);
-        user.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+        user.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         return save(user);
     }
@@ -132,7 +111,7 @@ public class UserServiceImpl implements UserService {
     public ResponseTemplateVO getUserWithDepartment(Long userId) {
         ResponseTemplateVO vo = new ResponseTemplateVO();
         User user = userRepository.findByUserId(userId);
-        Department department = restTemplate.getForObject(String.format("http://DEPARTMENT-SERVICE/departments/%s", userId),Department.class);
+        Department department = restTemplate.getForObject("http://DEPARTMENT-SERVICE/api/v1/departments/" + user.getDepartmentId(),Department.class);
         vo.setUser(user);
         vo.setDepartment(department);
 

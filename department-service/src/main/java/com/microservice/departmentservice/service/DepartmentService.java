@@ -6,7 +6,7 @@ import com.microservice.departmentservice.entity.Department;
 import java.util.List;
 
 public interface DepartmentService {
-    Department addNewDepartment(DepartmentForm form);
+    Department saveDepartment(DepartmentForm form);
 
     Department updateDepartment(String name, Long id);
 

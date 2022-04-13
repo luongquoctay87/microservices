@@ -21,10 +21,10 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse> addDepartment(@RequestBody DepartmentForm _form) {
-        Department department = departmentService.addNewDepartment(_form);
+    public ResponseEntity<ApiResponse> saveDepartment(@RequestBody DepartmentForm _form) {
+        Department department = departmentService.saveDepartment(_form);
         DepartmentDto dto = department.toDto();
-        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Thêm thành công");
+        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Thêm phòng ban thành công");
         return ResponseEntity.ok(response);
     }
 
@@ -40,7 +40,7 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse> findDepartmentById(@PathVariable("id") long _id) {
         Department department = departmentService.getById(_id);
         DepartmentDto dto = department.toDto();
-        ApiResponse response = ApiResponse.success(department,HttpStatus.OK.value(), String.format("Phòng ban %d",_id));
+        ApiResponse response = ApiResponse.success(department, HttpStatus.OK.value(), String.format("Phòng ban %d",_id));
         return ResponseEntity.ok(response);
     }
 
@@ -48,14 +48,14 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse> updateDepartment(@RequestBody DepartmentForm _form, @PathVariable("id") Long _id) {
         Department department = departmentService.updateDepartment(_form.getDepartmentName(), _id);
         DepartmentDto dto = department.toDto();
-        ApiResponse response = ApiResponse.success(department,HttpStatus.OK.value(), "Chỉnh sửa thành công " + _id);
+        ApiResponse response = ApiResponse.success(department, HttpStatus.OK.value(), String.format("Chỉnh sửa thành công %d" + _id));
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteDepartment(@PathVariable("id") long _id) {
         departmentService.deleteDepartment(_id);
-        ApiResponse response = ApiResponse.success(null,HttpStatus.OK.value(), "Xóa thành công" + _id);
+        ApiResponse response = ApiResponse.success(null, HttpStatus.OK.value(), String.format("Xóa phòng ban thành công %d" + _id));
         return ResponseEntity.ok(response);
     }
 }

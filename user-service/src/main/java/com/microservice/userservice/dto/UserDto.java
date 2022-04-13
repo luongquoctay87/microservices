@@ -11,9 +11,9 @@ import java.sql.Timestamp;
 @Data
 public class UserDto implements Serializable {
     private Long userId;
+    private long departmentId;
     private String username;
     private String password;
-    private long departmentId;
-    private Timestamp created_date;
-    private Timestamp updated_date;
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
 }

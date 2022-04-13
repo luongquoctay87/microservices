@@ -25,10 +25,10 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createNewUser(@RequestBody UserForm _form) {
-        User user = userService.createNewUser(_form);
+    public ResponseEntity<ApiResponse> saveUser(@RequestBody UserForm _form) {
+        User user = userService.saveUser(_form);
         UserDto dto = user.toDto();
-        ApiResponse response = ApiResponse.success(user, HttpStatus.OK.value(), "Thêm thành công");
+        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Thêm người dùng thành công");
         return ResponseEntity.ok(response);
     }
 
@@ -36,38 +36,30 @@ public class UserController {
     public ResponseEntity<ApiResponse> getListUsers() {
         List<User> users = userService.getListUsers();
         List<UserDto> dto = users.stream().map(User::toDto).collect(Collectors.toList());
-        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Danh sách các phòng ban");
+        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Danh sách các người dùng");
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> findDepartmentById(@PathVariable(name = "id") long _id) {
+    public ResponseEntity<ApiResponse> findUserById(@PathVariable(name = "id") long _id) {
         User user = userService.findUserById(_id);
         UserDto dto = user.toDto();
-        ApiResponse response = ApiResponse.success(dto,HttpStatus.OK.value(), String.format("Phòng ban %d",_id));
+        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), String.format("Người dùng %d",_id));
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping( "/password/{id}")
-    public ResponseEntity<ApiResponse> updatePassword(@RequestBody UserForm _form, @PathVariable("id") Long _id) {
-        User user = userService.changePassword(_form.getPassword(),_id);
+    @PatchMapping( "/update/{id}")
+    public ResponseEntity<ApiResponse> updateDetails(@RequestBody UserForm _form, @PathVariable("id") Long _id) {
+        User user = userService.updateDetails(_form.getUsername(), _form.getPassword(), _id);
         UserDto dto = user.toDto();
-        ApiResponse response = ApiResponse.success(dto,HttpStatus.OK.value(), "Chỉnh sửa mật khẩu thành công " + _id);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping( "/username/{id}")
-    public ResponseEntity<ApiResponse> updateUsername(@RequestBody UserForm _form, @PathVariable("id") Long _id) {
-        User user = userService.changeUsername(_form.getUsername(), _id);
-        UserDto dto = user.toDto();
-        ApiResponse response = ApiResponse.success(dto,HttpStatus.OK.value(), "Chỉnh sửa tên thành công " + _id);
+        ApiResponse response = ApiResponse.success(dto, HttpStatus.OK.value(), "Cập nhật thành công");
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("id") long _id) {
         userService.deleteUser(_id);
-        ApiResponse response = ApiResponse.success(null,HttpStatus.OK.value(), "Xóa thành công" + _id);
+        ApiResponse response = ApiResponse.success(null, HttpStatus.OK.value(), "Xóa người dùng thành công");
         return ResponseEntity.ok(response);
     }
 

@@ -13,6 +13,6 @@ public class DepartmentDto implements Serializable {
     private Long departmentId;
     private String departmentName;
     private Boolean enabled;
-    private Timestamp created_date;
-    private Timestamp updated_date;
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
 }

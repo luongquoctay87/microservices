@@ -7,11 +7,9 @@ import com.microservice.userservice.entity.User;
 import java.util.List;
 
 public interface UserService {
-    User createNewUser(UserForm form);
+    User saveUser(UserForm form);
 
-    User changePassword(String password, long userId);
-
-    User changeUsername(String username, long userId);
+    User updateDetails(String username, String password, long userId);
 
     User findUserById(long userId);
 

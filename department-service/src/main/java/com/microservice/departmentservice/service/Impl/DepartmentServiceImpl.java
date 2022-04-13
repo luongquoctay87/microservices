@@ -21,7 +21,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private DepartmentRepository departmentRepository;
 
     @Override
-    public Department addNewDepartment(DepartmentForm form) {
+    public Department saveDepartment(DepartmentForm form) {
         if(!StringUtils.hasText(form.getDepartmentName())) {
             String mess = "Invalid argument";
             throw new BadRequestException(mess);
@@ -38,7 +38,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .departmentName(form.getDepartmentName())
                 .build();
 
-        department.setCreated_date(new Timestamp(System.currentTimeMillis()));
+        department.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return save(department);
     }
@@ -60,7 +60,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         department.setDepartmentName(name);
-        department.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+        department.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         return save(department);
     }

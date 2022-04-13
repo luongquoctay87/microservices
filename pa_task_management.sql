@@ -21,7 +21,7 @@ INSERT INTO pa_activities (id, `method`,  url) VALUES (5, "PATCH", "/api/v1/depa
 INSERT INTO pa_activities (id, `method`,  url) VALUES (6, "DELETE", "/api/v1/departments/{id}");
 
 INSERT INTO pa_activities (id, `method`,  url) VALUES (7, "GET", "/api/v1/users");
-INSERT INTO pa_activities (id, `method`,  url) VALUES (8, "GET", "/api/v1/users//{id}");
+INSERT INTO pa_activities (id, `method`,  url) VALUES (8, "GET", "/api/v1/users/{id}");
 INSERT INTO pa_activities (id, `method`,  url) VALUES (9, "POST", "/api/v1/users");
 INSERT INTO pa_activities (id, `method`,  url) VALUES (10, "PUT", "/api/v1/users/{id}");
 INSERT INTO pa_activities (id, `method`,  url) VALUES (11, "PATCH", "/api/v1/users/{id}");
@@ -313,7 +313,7 @@ CREATE TABLE pa_tasks (
 	name VARCHAR(255) NOT NULL,
 	description TEXT, 
 	priority ENUM('Cao','Trung bình', 'Thấp'),
-	status ENUM('Chưa làm','Đang làm', 'Chờ nghiệm thu', 'Đã hoàn thành'),
+	status ENUM('Not','In progress', 'Done'),
 	estimate_time FLOAT,
 	start_date TIMESTAMP,
 	end_date TIMESTAMP,
@@ -327,41 +327,41 @@ CREATE TABLE pa_tasks (
     CONSTRAINT pa_task_fk4 FOREIGN KEY (section_id) REFERENCES pa_sections(id)
 );
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (1, 3, 4, null, null, 'Marketing công việc 1', 'Mô tả công việc 1', 'Cao', 'Đã hoàn thành', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (1, 3, 4, null, null, 'Marketing công việc 1', 'Mô tả công việc 1', 'Cao', 'Done', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (2, 3, 4, null, null, 'Marketing công việc 2', 'Mô tả công việc 2', 'Cao', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (2, 3, 4, null, null, 'Marketing công việc 2', 'Mô tả công việc 2', 'Cao', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (3, 3, 4, null, null, 'Marketing công việc 3', 'Mô tả công việc 3', 'Cao', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (3, 3, 4, null, null, 'Marketing công việc 3', 'Mô tả công việc 3', 'Cao', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (4, 3, 4, 1, 1, 'Marketing công việc A', 'Mô tả công việc A', 'Trung bình', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (4, 3, 4, 1, 1, 'Marketing công việc A', 'Mô tả công việc A', 'Trung bình', 'Done', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (5, 3, 4, 1, 1, 'Marketing công việc B', 'Mô tả công việc B', 'Trung bình', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (5, 3, 4, 1, 1, 'Marketing công việc B', 'Mô tả công việc B', 'Trung bình', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (6, 3, 4, 1, 1, 'Marketing công việc C', 'Mô tả công việc C', 'Trung bình', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (6, 3, 4, 1, 1, 'Marketing công việc C', 'Mô tả công việc C', 'Trung bình', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (7, 3, 4, 1, 2, 'Marketing công việc X', 'Mô tả công việc X', 'Thấp', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (7, 3, 4, 1, 2, 'Marketing công việc X', 'Mô tả công việc X', 'Thấp', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (8, 3, 4, 1, 2, 'Marketing công việc Y', 'Mô tả công việc Y', 'Thấp', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (8, 3, 4, 1, 2, 'Marketing công việc Y', 'Mô tả công việc Y', 'Thấp', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (9, 3, 4, 2, null, 'Công việc của tháng tư', 'Mô tả tháng tư', 'Trung bình', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
+VALUES (9, 3, 4, 2, null, 'Công việc của tháng tư', 'Mô tả tháng tư', 'Trung bình', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, null);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (10, 4, 1, 2, 1, 'Công việc tuần 1', 'Mô tả tuần 1', 'Trung bình', 'Chưa làm', 4.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9);
+VALUES (10, 4, 1, 2, 1, 'Công việc tuần 1', 'Mô tả tuần 1', 'Trung bình', 'Not', 4.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (11, 4, 1, 2, 2, 'Công việc tuần 2', 'Mô tả tuần 2', 'Trung bình', 'Chưa làm', 4.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9);
+VALUES (11, 4, 1, 2, 2, 'Công việc tuần 2', 'Mô tả tuần 2', 'Trung bình', 'Not', 4.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9);
 
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (12, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 2', 'Mô tả Thứ 2', 'Cao', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
+VALUES (12, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 2', 'Mô tả Thứ 2', 'Cao', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (13, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 3', 'Mô tả Thứ 3', 'Cao', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
+VALUES (13, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 3', 'Mô tả Thứ 3', 'Cao', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (14, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 4', 'Mô tả Thứ 4', 'Trung bình', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
+VALUES (14, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 4', 'Mô tả Thứ 4', 'Trung bình', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (15, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 5', 'Mô tả Thứ 5', 'Trung bình', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
+VALUES (15, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 5', 'Mô tả Thứ 5', 'Trung bình', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
 INSERT INTO pa_tasks (id, created_by, assignee, project_id, section_id, name, description, priority, status, estimate_time, start_date, end_date, parent_id) 
-VALUES (16, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 6', 'Mô tả Thứ 6', 'Thấp', 'Chưa làm', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
+VALUES (16, 4, 1, 2, 1, 'Công việc tuần 1 > Thứ 6', 'Mô tả Thứ 6', 'Thấp', 'Not', 8.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10);
 
 ----------------------------------
 -- TABLE pa_comments --

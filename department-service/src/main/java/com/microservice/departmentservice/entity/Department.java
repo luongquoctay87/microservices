@@ -28,19 +28,19 @@ public class Department {
     @Column(name = "enabled")
     private Boolean enabled;
 
-    @Column
-    private Timestamp created_date;
+    @Column(name = "created_date")
+    private Timestamp createdDate;
 
-    @Column
-    private Timestamp updated_date;
+    @Column(name = "update_date")
+    private Timestamp updatedDate;
 
     public DepartmentDto toDto() {
         return DepartmentDto.builder()
                 .departmentId(departmentId)
                 .departmentName(departmentName)
                 .enabled(enabled)
-                .created_date(created_date)
-                .updated_date(updated_date)
+                .createdDate(createdDate)
+                .updatedDate(updatedDate)
                 .build();
     }
 }
