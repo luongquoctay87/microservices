@@ -82,10 +82,9 @@ public class CommentServiceImpl implements CommentService {
         commentForm.setUserId(_comment.getUserId());
         commentForm.setContent(_comment.getContent());
         commentForm.setCreatedDate(ConvertDate.convertDateToString(_comment.getCreatedDate()));
-        if (_comment.getUpdatedDate() == null) {
-            return commentForm;
+        if (_comment.getUpdatedDate() != null) {
+            commentForm.setUpdatedDate(ConvertDate.convertDateToString(_comment.getUpdatedDate()));
         }
-        commentForm.setUpdatedDate(ConvertDate.convertDateToString(_comment.getUpdatedDate()));
         commentForm.setCountReplyId(countReplyId(_comment.getId()));
         return commentForm;
     }
