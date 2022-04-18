@@ -8,7 +8,7 @@ spring:
     config:
       enabled: true
       uri: http://localhost:9296
-  config:
-    import: "optional:configserver:"
+#  config:
+#    import: "optional:configserver:"
   zipkin:
     base-url: http://127.0.0.1:9411/

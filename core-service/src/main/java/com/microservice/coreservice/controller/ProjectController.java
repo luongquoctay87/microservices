@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/projects")
@@ -23,8 +21,7 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ApiResponse> createNewProject(@RequestBody ProjectForm _form) {
         log.info("ProjectControler -> createNewProject");
 
@@ -46,7 +43,7 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<ApiResponse> getProjectLists() {
         log.info("ProjectControler -> getProjectLists");
 
@@ -83,8 +80,8 @@ public class ProjectController {
 
         Project project = projectService.updateName(_projectName, _projectId);
         ProjectDto data = ProjectDto.toDto(project);
-        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.CREATED.value(), "Cập nhật dự án thành công")
-                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), "Cập nhật dự án thất bại");
+        ApiResponse response = data != null ? ApiResponse.appendSuccess(data, HttpStatus.CREATED.value(), "Cập nhật tên dự án thành công")
+                : ApiResponse.appendError(HttpStatus.NO_CONTENT.value(), "Cập nhật tên dự án thất bại");
         return ResponseEntity.ok(response);
     }
 }

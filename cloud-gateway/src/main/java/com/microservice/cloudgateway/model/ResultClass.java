@@ -9,5 +9,5 @@ public class ResultClass {
     private Long userId;
     private List<String> activities;
 //    private Token token;
-    private String activiesJson;
+    private String activitiesJson;
 }

@@ -1,7 +1,6 @@
 package com.microservice.coreservice.service.impl;
 
 import com.microservice.coreservice.domain.form.TeamForm;
-import com.microservice.coreservice.entity.Department;
 import com.microservice.coreservice.entity.ProjectTeam;
 import com.microservice.coreservice.entity.Team;
 import com.microservice.coreservice.entity.TeamUser;
@@ -18,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,13 +32,11 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     private TeamUserRepository teamUserRepository;
 
-
     @Autowired
     private RestTemplate restTemplate;
     
     @Autowired
     private ProjectTeamRepository projectTeamRepository;
-
 
     @Override
     public Team createNewTeam(TeamForm form) {
@@ -51,7 +47,7 @@ public class TeamServiceImpl implements TeamService {
                 .name(form.getName())
                 .description(form.getDescription())
                 .enabled(form.getEnabled())
-                .created_date(new Timestamp(System.currentTimeMillis()))
+                .createdDate(new Timestamp(System.currentTimeMillis()))
                 .build();
         teamRepository.save(team);
 
@@ -59,9 +55,9 @@ public class TeamServiceImpl implements TeamService {
 
             form.getProjectIds().forEach(id -> {
                 ProjectTeam projectTeam = ProjectTeam.builder()
-                        .project_id(id)
-                        .team_id(team.getId())
-                        .created_date(new Timestamp(System.currentTimeMillis()))
+                        .projectId(id)
+                        .teamId(team.getId())
+                        .createdDate(new Timestamp(System.currentTimeMillis()))
                         .build();
                 projectTeamRepository.save(projectTeam);
             });
@@ -80,10 +76,10 @@ public class TeamServiceImpl implements TeamService {
             form.getUserIds().forEach(id -> {
                 Integer idx = 0;
                 TeamUser teamUser = TeamUser.builder()
-                        .user_id(id)
-                        .team_id(team.getId())
-                        .department_id(map.get(idx))
-                        .created_date(new Timestamp(System.currentTimeMillis()))
+                        .userId(id)
+                        .teamId(team.getId())
+                        .departmentId(map.get(idx))
+                        .createdDate(new Timestamp(System.currentTimeMillis()))
                         .build();
                 teamUserRepository.save(teamUser);
                 idx++;
@@ -104,29 +100,29 @@ public class TeamServiceImpl implements TeamService {
 
         validateUpdateForm(form, teamId);
         Team team = teamRepository.findById(teamId).get();
-        team.setName(form.getName());
-        team.setDescription(form.getDescription());
-        team.setEnabled(form.getEnabled());
-        team.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+        team.setName(form.getName() != null ? form.getName() : team.getName());
+        team.setDescription(form.getDescription() != null ? form.getDescription() : team.getDescription());
+        team.setEnabled(form.getEnabled() != null ? form.getEnabled() : team.getEnabled());
+        team.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
         teamRepository.save(team);
-        if(!CollectionUtils.isEmpty(form.getProjectIds()) && form.getProjectIds().size() > 0) {
+        if(form.getProjectIds() != null && form.getProjectIds().size() > 0) {
 
-            ProjectTeam projectTeam = (ProjectTeam) projectTeamRepository.findByTeamId(teamId);
+            ProjectTeam projectTeam =  projectTeamRepository.findByTeamId(teamId);
 
             if(projectTeam != null) {
                 form.getProjectIds().forEach(id -> {
 
-                    if(projectTeam.getTeam_id() != id) {
+                    if(projectTeam.getTeamId() != id) {
 
-                        projectTeam.setProject_id(id);
-                        projectTeam.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+                        projectTeam.setProjectId(id);
+                        projectTeam.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
                         projectTeamRepository.save(projectTeam);
                     }
                 });
             }
         }
 
-        if(form.getUserIds().size() > 0 && form.getDepartmentIds().size() > 0) {
+        if(form.getUserIds() != null && form.getDepartmentIds() != null && form.getUserIds().size() > 0 && form.getDepartmentIds().size() > 0) {
 
             HashMap<Integer, Long> map = new HashMap<>();
 
@@ -136,15 +132,15 @@ public class TeamServiceImpl implements TeamService {
                 keyMap++;
             });
 
-            TeamUser teamUser = (TeamUser) teamUserRepository.findByTeamId(teamId);
+            TeamUser teamUser =  teamUserRepository.findByTeamId(teamId);
 
             if(teamUser != null) {
                 form.getUserIds().forEach(id -> {
                     Integer idx = 0;
 
-                    teamUser.setUser_id(id);
-                    teamUser.setDepartment_id(map.get(idx));
-                    teamUser.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+                    teamUser.setTeamId(id);
+                    teamUser.setDepartmentId(map.get(idx));
+                    teamUser.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
                     teamUserRepository.save(teamUser);
                     idx++;
                 });
@@ -164,7 +160,7 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamRepository.findById(teamId).get();
         team.setName(name);
-        team.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+        team.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         return teamRepository.save(team);
     }

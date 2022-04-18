@@ -10,12 +10,10 @@ import java.util.List;
 @Builder
 public class TeamForm {
 
-
     private String name;
     private String description;
     private Boolean enabled;
     private List<Long> departmentIds;
-   private List<Long> projectIds;
+    private List<Long> projectIds;
     private List<Long> userIds;
-
 }

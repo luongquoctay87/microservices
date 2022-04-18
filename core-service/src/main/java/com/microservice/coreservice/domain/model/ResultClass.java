@@ -5,9 +5,8 @@ import java.util.List;
 
 @Data
 public class ResultClass {
+
     private Long userId;
     private List<String> activities;
-    private String activiesJson;
-
-    
+    private String activitiesJson;
 }

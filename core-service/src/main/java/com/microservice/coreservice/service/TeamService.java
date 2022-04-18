@@ -7,6 +7,7 @@ import com.microservice.coreservice.entity.TeamUser;
 import java.util.List;
 
 public interface TeamService {
+
     Team createNewTeam(TeamForm form);
 
     Team updateTeam(TeamForm form, Long teamId);
@@ -18,6 +19,4 @@ public interface TeamService {
     List<Team> getListTeam(Long projectId);
 
     void deleteTeam(Long id);
-
-
 }

@@ -3,6 +3,7 @@ package com.microservice.coreservice.domain.dto;
 import com.microservice.coreservice.entity.Project;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.logging.log4j.util.Strings;
 
 @Data
 @Builder
@@ -12,21 +13,19 @@ public class ProjectDto {
     private String name;
     private String description;
     private String type;
-    private boolean enabled;
-    private Long created_day;
-    private Long updated_day;
+    private Boolean enabled;
+    private String createdDate;
+    private String updatedDate;
 
     public static ProjectDto toDto(Project project) {
         return ProjectDto.builder()
                 .id(project.getId())
-                .name(project.getName() != null ? project.getName() : null)
-                .description(project.getDescription() != null ? project.getDescription() :  null)
-                .type(project.getType() != null ? project.getType().name() : null)
+                .name(project.getName())
+                .description(project.getDescription())
+                .type(project.getType().name())
                 .enabled(project.getEnabled())
-                .created_day(project.getCreated_date() != null ? project.getCreated_date().getTime() : null)
-                .updated_day(project.getUpdated_date() != null ? project.getUpdated_date().getTime() : null)
+                .createdDate(project.getCreatedDate() != null ? String.valueOf(project.getCreatedDate()) : Strings.EMPTY)
+                .updatedDate(project.getUpdatedDate() != null ? String.valueOf(project.getUpdatedDate()) : Strings.EMPTY)
                 .build();
-
     }
-
 }

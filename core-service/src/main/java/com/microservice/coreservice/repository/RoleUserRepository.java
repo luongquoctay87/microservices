@@ -9,5 +9,4 @@ import javax.transaction.Transactional;
 
 public interface RoleUserRepository extends CrudRepository<RoleUser, Long> {
 
-
 }

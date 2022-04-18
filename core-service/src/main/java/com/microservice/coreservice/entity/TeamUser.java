@@ -1,10 +1,8 @@
 package com.microservice.coreservice.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -14,32 +12,27 @@ import java.util.Date;
 @Data
 @Builder
 @Table(name = "pa_team_users")
+@NoArgsConstructor
 @IdClass(TeamUser.class)
 public class TeamUser implements Serializable {
 
     @Id
-    private Long team_id;
+    private Long teamId;
 
-    @Column
-    private Long department_id;
+    private Long departmentId;
 
     @Id
-    private Long user_id;
+    private Long userId;
 
-    @Column
-    private Timestamp created_date;
+    private Timestamp createdDate;
 
-    @Column
-    private Timestamp updated_date;
+    private Timestamp updatedDate;
 
-    public TeamUser(Long team_id, Long department_id, Long user_id, Date created_date, Date updated_date) {
-        this.team_id = team_id;
-        this.department_id = department_id;
-        this.user_id = user_id;
-        this.created_date = new Timestamp(created_date.getTime());
-        this.updated_date = updated_date != null ? new Timestamp(updated_date.getTime()) : null ;
-    }
-
-    public TeamUser() {
+    public TeamUser(Long teamId, Long departmentId, Long userId, Date createdDate, Date updatedDate) {
+        this.teamId = teamId;
+        this.departmentId = departmentId;
+        this.userId = userId;
+        this.createdDate = new Timestamp(createdDate.getTime());
+        this.updatedDate = updatedDate != null ? new Timestamp(updatedDate.getTime()) : null ;
     }
 }

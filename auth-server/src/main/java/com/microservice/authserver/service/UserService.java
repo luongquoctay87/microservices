@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -29,8 +30,8 @@ public class UserService {
 //        return encoder.matches(password, user.getPassword());
 //    }
 
-    public User isAuthenticated(String username, String password) {
-        return userRepository.findByUsername(username);
+    public Optional<User> isAuthenticated(String username, String password) {
+        return Optional.ofNullable(userRepository.findByUsername(username));
     }
     /**
      * Get all roles by username

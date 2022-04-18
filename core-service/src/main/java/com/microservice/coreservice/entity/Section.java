@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -20,20 +19,13 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private String name;
 
-    @Column
     private String description;
 
-    @Column
     private Boolean enabled;
 
-    @Column
-    private Timestamp created_date;
+    private Timestamp createdDate;
 
-    @Column
-    private Timestamp updated_date;
-
-
+    private Timestamp updatedDate;
 }

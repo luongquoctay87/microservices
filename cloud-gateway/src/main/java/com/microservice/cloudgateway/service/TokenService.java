@@ -36,7 +36,7 @@ public class TokenService {
             e.printStackTrace();
         }
 
-       String activities = resultClass.getActiviesJson();
+       String activities = resultClass.getActivitiesJson();
         if (!StringUtils.hasLength(activities)) {
             log.info("JWT doesn't exists in Redis Server");
             return false;

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TaskSearchReponse {
 
-    private int id;
+    private Long id;
     private String name;
     private String assigneeName;
     private Long startDay;
@@ -18,12 +18,12 @@ public class TaskSearchReponse {
     private String priority;
     private String jobDescription;
     private String status;
-    private int parentId;
-    private Integer projectId;
+    private Long parentId;
+    private Long projectId;
     private String projectName;
-    private Integer sectionId;
+    private Long sectionId;
     private String sectionName;
-    private int created_by;
+    private Long created_by;
     private float estimate_time;
     private Long created_date;
     private Long updated_date;

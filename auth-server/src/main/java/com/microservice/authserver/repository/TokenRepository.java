@@ -27,7 +27,7 @@ public class TokenRepository {
         Objects.requireNonNull(token);
         Gson gson = new Gson();
         String activities = gson.toJson(result.getActivities());
-        result.setActiviesJson(activities);
+        result.setActivitiesJson(activities);
         String resultList = gson.toJson(result);
 
         redisTemplate.opsForHash().put(REDIS_PREFIX, token, resultList);

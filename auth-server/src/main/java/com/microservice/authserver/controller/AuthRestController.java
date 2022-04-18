@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,8 +44,8 @@ public class AuthRestController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestParam("username") String _userName, @RequestParam("password") String _password) {
         log.info("Request POST /auth/login");
-        User user = userService.isAuthenticated(_userName, _password);
-        if (!ObjectUtils.isEmpty(user)) {
+        Optional<User> user = userService.isAuthenticated(_userName, _password);
+        if (user.isPresent()) {
             String roles = userService.findAllRolesByUsername(_userName).stream()
                     .map(Object::toString)
                     .collect(Collectors.joining(","));
@@ -57,7 +59,7 @@ public class AuthRestController {
             });
 
             Result result = Result.builder()
-                    .userId(user.getId())
+                    .userId(user.get().getId())
                     .activities(APIs)
                     .build();
             // save token to redis
@@ -69,7 +71,4 @@ public class AuthRestController {
         log.info("Log in fail !!");
         return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
-
-
-
 }

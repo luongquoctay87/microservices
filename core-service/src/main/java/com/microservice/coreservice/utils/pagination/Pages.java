@@ -10,10 +10,6 @@ public class Pages {
     private int totalPages;
     private int pageSize;
     private int page;
-//
-//    public Pages() {
-//        this.totalElements = (long) 0;
-//    }
 
     public Pages(int totalElements, Integer pageSize, Integer page , int totalPages) {
         this.totalElements = totalElements;

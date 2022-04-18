@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -39,15 +38,15 @@ public class ProjectServiceImpl implements ProjectService {
                 .name(form.getName())
                 .description(form.getDescription())
                 .enabled(Boolean.TRUE)
-                .created_date(new Timestamp(System.currentTimeMillis()))
+                .createdDate(new Timestamp(System.currentTimeMillis()))
                 .type(ProjectEnums.valueOf(form.getType()))
                 .build();
         projectRepository.save(project);
 
         ProjectTeam projectTeam = ProjectTeam.builder()
-                .project_id(project.getId())
-                .team_id(form.getTeamId())
-                .created_date(new Timestamp(System.currentTimeMillis()))
+                .projectId(project.getId())
+                .teamId(form.getTeamId())
+                .createdDate(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         projectTeamRepository.save(projectTeam);
@@ -61,19 +60,20 @@ public class ProjectServiceImpl implements ProjectService {
         validateUpdateProject(form, projectId);
 
         Project project = projectRepository.findById(projectId).get();
-        project.setName(form.getName());
-        project.setDescription(form.getDescription());
-        project.setType(ProjectEnums.valueOf(form.getType()));
-        project.setEnabled(form.isEnabled());
-        project.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+        project.setName(form.getName() != null ? form.getName() : project.getName());
+        project.setDescription(form.getDescription() != null ? form.getDescription() : project.getDescription());
+        project.setType( form.getType() != null ? ProjectEnums.valueOf(form.getType()) : project.getType() );
+        project.setEnabled(form.getEnabled() != null ? form.getEnabled() : project.getEnabled());
+        project.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         if(form.getTeamId() != null) {
-            ProjectTeam projectTeam = (ProjectTeam) projectTeamRepository.findByTeamId(form.getTeamId());
+            ProjectTeam projectTeam = projectTeamRepository.findByTeamId(form.getTeamId());
             if(!ObjectUtils.isEmpty(projectTeam)) {
-                projectTeam.setTeam_id(form.getTeamId());
+                projectTeam.setTeamId(form.getTeamId());
                 projectTeamRepository.save(projectTeam);
             }
         }
+
         return projectRepository.save(project);
     }
 
@@ -82,6 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
         log.info("ProjectService -> updateName ");
 
         ValidateUtils.validateNullOrBlankString(name);
+
         if(projectRepository.existsByName(name)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tên dự án đã tồn tại");
         }
@@ -89,9 +90,11 @@ public class ProjectServiceImpl implements ProjectService {
         if(!projectRepository.existsById(projectId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dự án");
         }
+
         Project project = projectRepository.findById(projectId).get();
         project.setName(name);
-        project.setCreated_date(new Timestamp(System.currentTimeMillis()));
+        project.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+
         return projectRepository.save(project);
     }
 
@@ -102,8 +105,10 @@ public class ProjectServiceImpl implements ProjectService {
         if(!projectRepository.existsById(projectId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dự án");
         }
+
         Project project = projectRepository.findById(projectId).get();
         project.setEnabled(false);
+
         projectRepository.save(project);
     }
 
@@ -114,6 +119,7 @@ public class ProjectServiceImpl implements ProjectService {
         if(!projectRepository.existsById(projectId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dự án");
         }
+
         return projectRepository.findById(projectId).get();
     }
 
@@ -121,7 +127,7 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> getListProject() {
         log.info("ProjectService -> getListProject ");
 
-        List<Project>  projects = (List<Project>) projectRepository.findAll();
+        List<Project>  projects =  projectRepository.findAll();
 
         if(!CollectionUtils.isEmpty(projects) && projects.size() > 0) {
             return projects;
@@ -130,8 +136,8 @@ public class ProjectServiceImpl implements ProjectService {
         return Collections.EMPTY_LIST;
     }
 
-
     private void validateProjectForm(ProjectForm form) {
+
         Map<String, String> map = new HashMap<>();
         map.put("name", form.getName());
         map.put("decription", form.getDescription());
@@ -143,6 +149,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void validateUpdateProject(ProjectForm form, Long projectId) {
+
         Map<String, String> map = new HashMap<>();
         map.put("name", form.getName());
         map.put("decription", form.getDescription());
@@ -156,5 +163,4 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dự án");
         }
     }
-
 }

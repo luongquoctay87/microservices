@@ -18,6 +18,7 @@ public class TaskSearchForm {
 //    Lọc công việc theo tuần , theo tháng
     private String dataType;
 
-    private int project_id;
-    private int section_id;
+    private Long project_id;
+
+    private Long section_id;
 }

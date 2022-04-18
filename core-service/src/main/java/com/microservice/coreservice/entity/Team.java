@@ -1,10 +1,8 @@
 package com.microservice.coreservice.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -12,6 +10,7 @@ import java.util.Date;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
 @Table(name = "pa_teams")
 public class Team {
 
@@ -19,29 +18,22 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private String name;
 
-    @Column
     private String description;
 
-    @Column
     private Boolean enabled;
 
-    @Column
-    private Timestamp created_date;
+    private Timestamp createdDate;
 
-    @Column
-    private Timestamp updated_date;
+    private Timestamp updatedDate;
 
-    public Team(Long id, String name, String description, Boolean enabled, Date created_date, Date updated_date) {
+    public Team(Long id, String name, String description, Boolean enabled, Date createdDate, Date updatedDate) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.enabled = enabled;
-        this.created_date = new Timestamp(created_date.getTime());
-        this.updated_date = updated_date != null ? new Timestamp(updated_date.getTime()) : null ;
-    }
-    public Team() {
+        this.createdDate = new Timestamp(createdDate.getTime());
+        this.updatedDate = updatedDate != null ? new Timestamp(updatedDate.getTime()) : null ;
     }
 }

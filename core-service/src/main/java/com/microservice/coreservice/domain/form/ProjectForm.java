@@ -14,5 +14,5 @@ public class ProjectForm {
     private String description;
     private String type;
     private Long teamId;
-    private boolean enabled;
+    private Boolean enabled;
 }

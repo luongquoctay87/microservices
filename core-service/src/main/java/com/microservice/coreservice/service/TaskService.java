@@ -1,6 +1,7 @@
 package com.microservice.coreservice.service;
 
 import com.microservice.coreservice.domain.dto.TaskSearchReponse;
+import com.microservice.coreservice.domain.form.ColumExcel;
 import com.microservice.coreservice.domain.form.TaskForm;
 import com.microservice.coreservice.domain.form.TaskSearchForm;
 import com.microservice.coreservice.entity.Task;
@@ -28,8 +29,7 @@ public interface TaskService {
 
     void deleteTask(Long taskId);
 
-    ByteArrayInputStream exportProgressUser();
+    ByteArrayInputStream exportProgressUser(ColumExcel columExcel);
 
-    ByteArrayInputStream exportProgressTeam();
-
+    ByteArrayInputStream exportProgressTeam(ColumExcel columExcel);
 }

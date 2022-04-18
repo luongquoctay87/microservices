@@ -9,11 +9,11 @@ import javax.transaction.Transactional;
 
 public interface TeamUserRepository extends CrudRepository<TeamUser, Long> {
 
-    @Query(value = "SELECT new com.microservice.coreservice.entity.TeamUser(t.team_id, t.department_id, t.user_id, t.created_date, t.updated_date) FROM TeamUser t WHERE t.team_id  = ?1")
-    Object findByTeamId(Long teamId);
+   TeamUser findByTeamId(Long teamId);
+
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE TeamUser p WHERE p.team_id = ?1 ")
+    @Query(value = "DELETE TeamUser p WHERE p.teamId = ?1 ")
     void deleteByTeamId(Long id);
 }

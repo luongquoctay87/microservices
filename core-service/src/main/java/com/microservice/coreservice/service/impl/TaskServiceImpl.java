@@ -7,6 +7,7 @@ import com.microservice.coreservice.constants.PriorityEnums;
 import com.microservice.coreservice.constants.SortPropertyEnums;
 import com.microservice.coreservice.constants.StatusEnums;
 import com.microservice.coreservice.domain.dto.TaskSearchReponse;
+import com.microservice.coreservice.domain.form.ColumExcel;
 import com.microservice.coreservice.domain.form.TaskForm;
 import com.microservice.coreservice.domain.form.TaskSearchForm;
 import com.microservice.coreservice.domain.model.ModelExcelTeam;
@@ -32,11 +33,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -122,7 +123,7 @@ public class TaskServiceImpl implements TaskService {
                 .setMaxResults(pageSize)
                 .setParameter("taskId", taskIds.size() > 0 ? taskIds : taskList)
                 .setParameter("projectId", request.getProject_id())
-                .setParameter("sectionId", request.getSection_id() != 0 ? request.getSection_id() : null)
+                .setParameter("sectionId", request.getSection_id() != null ? request.getSection_id() : null)
                 .setParameter("status", taskIds.size() > 0 ? taskIds : taskList);
 
         // Trường hợp request gửi lên không null textsearch
@@ -147,20 +148,23 @@ public class TaskServiceImpl implements TaskService {
 
         if (!objects.isEmpty()) {
             for (Object[] object : objects) {
-                int id = (int) object[0];
+                Long id = Long.valueOf(object[0].toString());
                 String taskName = Objects.isNull(object[1]) ? null : object[1].toString();
-                int create_by = (int) object[2];
-                Integer project_id = (int) object[3];
-                Integer section_id = (int) object[4];
+                BigInteger create_byBigInteger = Objects.isNull(object[2]) ? null : (BigInteger) object[2];
+                Long create_by = create_byBigInteger.longValue();
+                BigInteger project_idBigInteger = Objects.isNull(object[3]) ? null : (BigInteger) object[3];
+                Long project_id = project_idBigInteger.longValue();
+                BigInteger section_idBigInteger = Objects.isNull(object[4]) ? null : (BigInteger) object[4];
+                Long section_id = section_idBigInteger.longValue();
                 String description = Objects.isNull(object[5]) ? null : object[5].toString();
                 String priority = Objects.isNull(object[6]) ? null : object[6].toString();
                 String status = Objects.isNull(object[7]) ? null : object[7].toString();
                 float estimate_time = (float) object[8];
                 Timestamp start_day = Objects.isNull(object[9]) ? null : (Timestamp) object[9];
                 Timestamp end_day = Objects.isNull(object[10]) ? null : (Timestamp) object[10];
-                int parent_id = (int) object[11];
-                Timestamp created_day = Objects.isNull(object[12]) ? null : (Timestamp) object[12];
-                Timestamp updated_day = Objects.isNull(object[13]) ? null : (Timestamp) object[13];
+                Long parent_id = Objects.isNull(object[11]) ? null : Long.valueOf(object[11].toString());
+                Timestamp created_date = Objects.isNull(object[12]) ? null : (Timestamp) object[12];
+                Timestamp updated_date = Objects.isNull(object[13]) ? null : (Timestamp) object[13];
                 String project_name = Objects.isNull(object[14]) ? null : object[14].toString();
                 String section_name = Objects.isNull(object[15]) ? null : object[15].toString();
                 String assigneeName = Objects.isNull(object[16]) ? null : object[16].toString();
@@ -174,15 +178,15 @@ public class TaskServiceImpl implements TaskService {
                         .priority(priority)
                         .jobDescription(description)
                         .status(status)
-                        .parentId(parent_id)
-                        .projectId(project_id != null ? project_id : null)
-                        .sectionId(section_id != null ? section_id : null)
+                        .parentId(parent_id != null ? parent_id : -1)
+                        .projectId(project_id != null ? project_id : -1)
+                        .sectionId(section_id != null ? section_id : -1)
                         .projectName(project_name)
                         .sectionName(section_name)
                         .created_by(create_by)
                         .estimate_time(estimate_time)
-                        .created_date(created_day.getTime())
-                        .updated_date(updated_day != null ? updated_day.getTime() : null)
+                        .created_date(created_date != null ? created_date.getTime() : -1)
+                        .updated_date( updated_date != null ? updated_date.getTime() : -1)
                         .build();
 
                 taskSearchResponseList.add(taskSearchReponse);
@@ -256,25 +260,33 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void searchByTextSearchAndSort(String nativeQuery, TaskSearchForm request) {
-        if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByEndDay) {
+
+        if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByEndDate) {
+
             if (request.getSortOrder().equals("ASC")) {
                 nativeQuery += " " + "ORDER BY t.end_date ASC";
             } else {
                 nativeQuery += " " + "ORDER BY t.end_date DESC";
             }
-        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByCreatedDay) {
+
+        } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByCreatedDate) {
+
             if (request.getSortOrder().equals("ASC")) {
                 nativeQuery += " " + "ORDER BY t.created_date ASC";
             } else {
                 nativeQuery += " " + "ORDER BY t.created_date DESC";
             }
+
         } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByAssignee) {
+
             if (request.getSortOrder().equals("ASC")) {
                 nativeQuery += " " + "ORDER BY t.assignee ASC";
             } else {
                 nativeQuery += " " + "ORDER BY t.assignee DESC";
             }
+
         } else if (SortPropertyEnums.valueOf(request.getSortProperty()) == SortPropertyEnums.ByPriority) {
+
             if (request.getSortOrder().equals("ASC")) {
                 nativeQuery += " " + "ORDER BY t.priority ASC";
             } else {
@@ -284,6 +296,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Pages getPages(int totalElements, int pageSize, int page) {
+
         int totalPages = 0;
         if (totalElements > 0) {
             totalPages = totalElements % pageSize == 0 ?
@@ -295,6 +308,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private List<TaskSearchReponse> getTaskSearchResponseByToday(List<TaskSearchReponse> taskSearchResponseList) {
+
         if (taskSearchResponseList != null) {
             List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
@@ -319,8 +333,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private List<TaskSearchReponse> getTaskSearchResponseByWeekNow(List<TaskSearchReponse> taskSearchResponseList) {
+
         if (taskSearchResponseList != null) {
-            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).collect(Collectors.toList());
+            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).map(Long::new).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
                 LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 int weekOfYearNow = dateNow.get(WeekFields.of(DayOfWeek.MONDAY, 7).weekOfYear());
@@ -343,8 +358,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private List<TaskSearchReponse> getTaskSearchResponseByMonthNow(List<TaskSearchReponse> taskSearchResponseList) {
+
         if (taskSearchResponseList != null) {
-            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).collect(Collectors.toList());
+            List<Long> taskCreatedDay = taskSearchResponseList.stream().map(TaskSearchReponse::getCreated_date).map(Long::new).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(taskCreatedDay)) {
                 LocalDate dateNow = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 int monthNow = dateNow.getMonthValue();
@@ -391,35 +407,35 @@ public class TaskServiceImpl implements TaskService {
        Task task = Task.builder()
                .name(taskForm.getName())
                .assignee(taskForm.getAssignee())
-               .created_by(userId)
+               .createdBy(userId)
                .description(taskForm.getJobDescription())
                .priority(PriorityEnums.valueOf(taskForm.getPriority()))
                .status(StatusEnums.valueOf(taskForm.getStatus()))
-               .estimate_time(taskForm.getEstimate_time())
-               .start_date(new Timestamp(taskForm.getStartDay()))
-               .end_date(new Timestamp(taskForm.getEndDay()))
-               .created_date(new Timestamp(System.currentTimeMillis()))
+               .estimateTime(taskForm.getEstimate_time())
+               .startDate(new Timestamp(taskForm.getStartDay()))
+               .endDate(new Timestamp(taskForm.getEndDay()))
+               .createdDate(new Timestamp(System.currentTimeMillis()))
                .build();
        taskRepository.save(task);
 
        if (taskForm.getSectionId() != null) {
            Section section = sectionRepository.findById(taskForm.getSectionId()).get();
            if (!ObjectUtils.isEmpty(section)) {
-               task.setSection_id(taskForm.getSectionId());
+               task.setSectionId(taskForm.getSectionId());
            }
        }
 
        if (taskForm.getProjectId() != null) {
            Project project = projectRepository.findById(taskForm.getProjectId()).get();
            if (!ObjectUtils.isEmpty(project)) {
-               task.setProject_id(taskForm.getProjectId());
+               task.setProjectId(taskForm.getProjectId());
            }
        }
 
        if (taskForm.getParentId() != null) {
            Task parent = taskRepository.findById(taskForm.getParentId()).get();
            if (!ObjectUtils.isEmpty(parent)) {
-               task.setParent_id(taskForm.getParentId());
+               task.setParentId(taskForm.getParentId());
            }
        }
 
@@ -449,15 +465,15 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId).get();
 
         if (task != null) {
-            task.setName(taskForm.getName());
-            task.setDescription(taskForm.getJobDescription());
-            task.setAssignee(taskForm.getAssignee() != null ? taskForm.getAssignee() : null);
-            task.setUpdated_date(new Timestamp(System.currentTimeMillis()));
-            task.setStart_date(new Timestamp(taskForm.getStartDay() != null ? taskForm.getStartDay() : task.getStart_date().getTime()));
-            task.setEnd_date(new Timestamp(taskForm.getEndDay() != null ? taskForm.getEndDay() : task.getEnd_date().getTime()));
+            task.setName(taskForm.getName() != null ? taskForm.getName() : task.getName());
+            task.setDescription(taskForm.getJobDescription() != null ? taskForm.getJobDescription() : task.getDescription());
+            task.setAssignee(taskForm.getAssignee() != null ? taskForm.getAssignee() : task.getAssignee());
+            task.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+            task.setStartDate(new Timestamp(taskForm.getStartDay() != null ? taskForm.getStartDay() : task.getStartDate().getTime()));
+            task.setEndDate(new Timestamp(taskForm.getEndDay() != null ? taskForm.getEndDay() : task.getEndDate().getTime()));
             task.setPriority(PriorityEnums.valueOf(taskForm.getPriority() != null ? taskForm.getPriority() : task.getPriority().name()));
             task.setStatus(StatusEnums.valueOf(taskForm.getStatus() != null ? taskForm.getStatus() : task.getStatus().name()));
-            task.setEstimate_time((!ObjectUtils.isEmpty(taskForm.getEstimate_time()) ? taskForm.getEstimate_time() : task.getEstimate_time()));
+            task.setEstimateTime((!ObjectUtils.isEmpty(taskForm.getEstimate_time()) ? taskForm.getEstimate_time() : task.getEstimateTime()));
             taskRepository.save(task);
         }
         return task;
@@ -472,7 +488,7 @@ public class TaskServiceImpl implements TaskService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy công việc");
         }
         task.setStatus(StatusEnums.valueOf(status));
-        task.setUpdated_date(new Timestamp(System.currentTimeMillis()));
+        task.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
         return taskRepository.save(task);
     }
 
@@ -488,14 +504,13 @@ public class TaskServiceImpl implements TaskService {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy dự án");
             }
             project = projectRepository.findById(projectId).get();
-
         }
+
         if (sectionId != null) {
             if (!sectionRepository.existsById(sectionId)) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy giai đoạn");
             }
             section = sectionRepository.findById(sectionId).get();
-
         }
 
         List<Task> tasks = new ArrayList<>();
@@ -528,25 +543,25 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ByteArrayInputStream exportProgressUser() {
+    public ByteArrayInputStream exportProgressUser(ColumExcel columExcel) {
 
         List<Long> listTaskIds=  taskRepository.findAllId();
         List<Timestamp> listCreatedDate=  taskRepository.findAllCreatedDate();
 
         List<Long> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
         List<ModelExcelUser> data = taskRepository.getListTaskFinished(dataInMonth);
-        ByteArrayInputStream in = ExcelHelper.userExportToExcel(data);
+        ByteArrayInputStream in = ExcelHelper.userExportToExcel(data, columExcel.getColumns());
         return in;
     }
 
     @Override
-    public ByteArrayInputStream exportProgressTeam() {
+    public ByteArrayInputStream exportProgressTeam(ColumExcel columExcel) {
         List<Long> listTaskIds=  taskRepository.findAllId();
         List<Timestamp> listCreatedDate=  taskRepository.findAllCreatedDate();
 
         List<Long> dataInMonth = getListDataByMonthNow(listCreatedDate, listTaskIds);
         List<ModelExcelTeam> data = getListProjectFinished(dataInMonth);
-        ByteArrayInputStream in = ExcelHelper.teamExportToExcel(data);
+        ByteArrayInputStream in = ExcelHelper.teamExportToExcel(data, columExcel.getColumns());
         return in;
     }
 
@@ -591,7 +606,7 @@ public class TaskServiceImpl implements TaskService {
         List<ModelExcelTeam> modelExcelTeams = new ArrayList<>();
 
         for (int i = 0; i < frequencyMap.size() ; i++) {
-            List<String> keys =   frequencyMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+            List<String> keys = frequencyMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
             List<String> listDepartment = taskRepository.getListDepartmentByTeam(keys.get(i));
             String department = listDepartment.stream().map(Objects::toString).collect(Collectors.joining(","));
             ModelExcelTeam modelExcelTeam = ModelExcelTeam.builder()
@@ -605,6 +620,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void validateTaskForm(TaskForm taskForm) {
+
         HashMap<String, String> map = new HashMap<>();
         map.put("Tên dự án", taskForm.getName());
         map.put("Mô tả dự án", taskForm.getJobDescription());

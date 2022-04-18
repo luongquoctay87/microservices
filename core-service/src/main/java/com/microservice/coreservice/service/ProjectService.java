@@ -18,5 +18,4 @@ public interface ProjectService {
     Project findProjectById(Long projectId);
 
     List<Project> getListProject();
-
 }

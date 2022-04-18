@@ -9,7 +9,6 @@ import lombok.Data;
 public class TaskForm {
 
     private String name;
-
     private Long assignee;
     private Long startDay;
     private Long endDay;
@@ -20,5 +19,4 @@ public class TaskForm {
     private Long projectId;
     private Long sectionId;
     private float estimate_time;
-
 }

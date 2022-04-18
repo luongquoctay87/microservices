@@ -1,9 +1,8 @@
 package com.microservice.coreservice.domain.dto;
 
 import com.microservice.coreservice.entity.Team;
-import com.microservice.coreservice.entity.TeamUser;
-import lombok.Builder;
 import lombok.Data;
+import org.apache.logging.log4j.util.Strings;
 
 @Data
 public class TeamDto {
@@ -12,15 +11,15 @@ public class TeamDto {
     private String name;
     private String description;
     private Boolean enabled;
-    private Long created_date;
-    private Long updated_date;
+    private String created_date;
+    private String updated_date;
 
     public TeamDto(Team team) {
         this.id = team.getId();
         this.name = team.getName();
         this.description = team.getDescription();
         this.enabled = team.getEnabled();
-        this.created_date = team.getCreated_date().getTime();
-        this.updated_date = team.getUpdated_date() != null ? team.getUpdated_date().getTime() : null;
+        this.created_date = String.valueOf(team.getCreatedDate());
+        this.updated_date = team.getUpdatedDate() != null ? String.valueOf(team.getUpdatedDate()) : Strings.EMPTY;
     }
 }
