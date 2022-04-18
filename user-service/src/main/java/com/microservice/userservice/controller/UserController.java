@@ -19,6 +19,7 @@ public class UserController {
     @PostMapping("/")
     public User saveUser(@RequestBody User user){
         log.info("UserController -> saveUser");
+
         return userService.saveUser(user);
     }
 
