@@ -8,6 +8,34 @@
 4. Server config will save, share hystrix config file
 5. Zipkin will control code, CI/CD 
 
+### Build Maven
+Build all microservice with syntax:
+```
+$ mvn clean install
+```
+
+### Create Docker Network
+```
+$ docker network create micro-network
+```
+
+### Build Docker Image
+```
+$ docker-compose build
+```
+
+### Run Docker Container
+```
+$ docker compose up -d
+```
+
+### Lưu ý thực hiện theo các bước sau khi sửa code
+- build file jar
+- build image
+- run container
+
+
+
 ### Build and Run Microservice
 - cd to microservice folders
 ```
