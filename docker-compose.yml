@@ -117,29 +117,29 @@ services:
     links:
       - "redis-server:redis"
 
-  user-service:
-    container_name: USER-SERVICE
-    build:
-      context: ./user-service
-      dockerfile: Dockerfile
-    environment:
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-    ports:
-      - "6651:5005"
-    depends_on:
-      - service-registry
-
-  department-service:
-    container_name: DEPARTMENT-SERVICE
-    build:
-      context: ./department-service
-      dockerfile: Dockerfile
-    environment:
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-    ports:
-      - "6652:5005"
-    depends_on:
-      - service-registry
+#  user-service:
+#    container_name: USER-SERVICE
+#    build:
+#      context: ./user-service
+#      dockerfile: Dockerfile
+#    environment:
+#      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
+#    ports:
+#      - "6651:5005"
+#    depends_on:
+#      - service-registry
+#
+#  department-service:
+#    container_name: DEPARTMENT-SERVICE
+#    build:
+#      context: ./department-service
+#      dockerfile: Dockerfile
+#    environment:
+#      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
+#    ports:
+#      - "6652:5005"
+#    depends_on:
+#      - service-registry
 
 volumes:
   db_data:
