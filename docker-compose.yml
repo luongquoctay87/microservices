@@ -12,15 +12,15 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 
-#  postgres:
-#    container_name: POSTGRES
-#    image: postgres:9.4
-#    environment:
-#      - POSTGRES_USER=app_user
-#      - POSTGRES_PASSWORD=app_password
-#      - POSTGRES_DB=app_db
-#    ports:
-#      - "5432:5432"
+  #  postgres:
+  #    container_name: POSTGRES
+  #    image: postgres:9.4
+  #    environment:
+  #      - POSTGRES_USER=app_user
+  #      - POSTGRES_PASSWORD=app_password
+  #      - POSTGRES_DB=app_db
+  #    ports:
+  #      - "5432:5432"
 
   mysql:
     container_name: MYSQL
@@ -117,29 +117,22 @@ services:
     links:
       - "redis-server:redis"
 
-#  user-service:
-#    container_name: USER-SERVICE
-#    build:
-#      context: ./user-service
-#      dockerfile: Dockerfile
-#    environment:
-#      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-#    ports:
-#      - "6651:5005"
-#    depends_on:
-#      - service-registry
-#
-#  department-service:
-#    container_name: DEPARTMENT-SERVICE
-#    build:
-#      context: ./department-service
-#      dockerfile: Dockerfile
-#    environment:
-#      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-#    ports:
-#      - "6652:5005"
-#    depends_on:
-#      - service-registry
+  comment-service:
+    container_name: COMMENT-SERVICE
+    build:
+      context: ./comment-service
+      dockerfile: Dockerfile
+    environment:
+      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
+      - DB_URL=mysql
+      - DB_USER=dbuser
+      - DB_PASSWORD=dbpassword
+    depends_on:
+      - service-registry
+#      - redis-server
+      - mysql
+    ports:
+      - "6651:5005"
 
 volumes:
   db_data:
