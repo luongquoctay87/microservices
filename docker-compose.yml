@@ -3,11 +3,7 @@ version: "3.9"
 services:
   redis-server:
     hostname: redis
-<<<<<<<<< Temporary merge branch 1
-    container_name: REDIS-SERVER
-=========
     container_name: redis-server
->>>>>>>>> Temporary merge branch 2
     image: redis:6.2-alpine
     ports:
       - "6379:6379"
@@ -15,7 +11,6 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 
-<<<<<<<<< Temporary merge branch 1
 #  postgres:
 #    container_name: POSTGRES
 #    image: postgres:9.4
@@ -27,11 +22,7 @@ services:
 #      - "5432:5432"
 
   mysql:
-    container_name: MYSQL
-=========
-  mysql:
     container_name: mysql
->>>>>>>>> Temporary merge branch 2
     image: mysql:5.7
     restart: always
     environment:
@@ -44,20 +35,12 @@ services:
     expose:
       - 3366
     volumes:
-<<<<<<<<< Temporary merge branch 1
-      - db_data:/var/lib/mysql
-=========
       - micro_data:/var/lib/mysql
->>>>>>>>> Temporary merge branch 2
       - ./deployment/db/init.sql:/data/application/init.sql
     command: --init-file /data/application/init.sql
 
   service-registry:
-<<<<<<<<< Temporary merge branch 1
-    container_name: SERVICE-REGISTRY
-=========
     container_name: service-registry
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./service-registry
       dockerfile: Dockerfile
@@ -65,97 +48,58 @@ services:
       - "8761:8761"
 
   hystrix-dashboard:
-<<<<<<<<< Temporary merge branch 1
-    container_name: HYSTRIX-DASHBOARD
-=========
     container_name: hystrix-dashboard
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./hystrix-dashboard
       dockerfile: Dockerfile
     environment:
-<<<<<<<<< Temporary merge branch 1
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-=========
       - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
->>>>>>>>> Temporary merge branch 2
     depends_on:
       - service-registry
     ports:
       - "9295:9295"
 
   cloud-config-server:
-<<<<<<<<< Temporary merge branch 1
-    container_name: CLOUD-CONFIG-SERVER
-=========
     container_name: cloud-config-server
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./cloud-config-server
       dockerfile: Dockerfile
     environment:
-<<<<<<<<< Temporary merge branch 1
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-=========
       - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
->>>>>>>>> Temporary merge branch 2
     depends_on:
       - service-registry
     ports:
       - "9296:9296"
 
   cloud-gateway:
-<<<<<<<<< Temporary merge branch 1
-    container_name: CLOUD-GATEWAY
-=========
     container_name: cloud-gateway
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./cloud-gateway
       dockerfile: Dockerfile
     environment:
-<<<<<<<<< Temporary merge branch 1
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-#      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-=========
       - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
->>>>>>>>> Temporary merge branch 2
     depends_on:
       - service-registry
       - cloud-config-server
       - redis-server
     ports:
-<<<<<<<<< Temporary merge branch 1
-      - "8080:5005"
-=========
       - "8080:8080"
       - "5005:5005"
->>>>>>>>> Temporary merge branch 2
     expose:
       - 8080
     links:
       - "redis-server:redis"
 
   auth-server:
-<<<<<<<<< Temporary merge branch 1
-    container_name: AUTH-SERVER
-=========
     container_name: auth-server
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./auth-server
       dockerfile: Dockerfile
     environment:
-<<<<<<<<< Temporary merge branch 1
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-=========
       - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
->>>>>>>>> Temporary merge branch 2
       - DB_URL=mysql
       - DB_USER=dbuser
       - DB_PASSWORD=dbpassword
@@ -167,71 +111,39 @@ services:
       - redis-server
       - mysql
     ports:
-<<<<<<<<< Temporary merge branch 1
-      - "6650:5005"
-=========
       - "5056:5005"
->>>>>>>>> Temporary merge branch 2
     links:
       - "redis-server:redis"
 
   user-service:
-<<<<<<<<< Temporary merge branch 1
-    container_name: USER-SERVICE
-=========
     container_name: user-service
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./user-service
       dockerfile: Dockerfile
     environment:
-<<<<<<<<< Temporary merge branch 1
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-    ports:
-      - "6651:5005"
-=========
       - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
     ports:
       - "5057:5005"
->>>>>>>>> Temporary merge branch 2
     depends_on:
       - service-registry
 
   department-service:
-<<<<<<<<< Temporary merge branch 1
-    container_name: DEPARTMENT-SERVICE
-=========
     container_name: department-service
->>>>>>>>> Temporary merge branch 2
     build:
       context: ./department-service
       dockerfile: Dockerfile
     environment:
-<<<<<<<<< Temporary merge branch 1
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-    ports:
-      - "6652:5005"
-=========
       - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
     ports:
       - "5058:5005"
->>>>>>>>> Temporary merge branch 2
     depends_on:
       - service-registry
 
 volumes:
-<<<<<<<<< Temporary merge branch 1
-  db_data:
-=========
   micro_data:
->>>>>>>>> Temporary merge branch 2
     driver: local
 
 networks:
   default:
     name: micro-network
-<<<<<<<<< Temporary merge branch 1
     external: true
-=========
-    external: true
->>>>>>>>> Temporary merge branch 2
