@@ -1,6 +1,19 @@
 version: "3.9"
 
 services:
+#  jenkins:
+#    container_name: JENKINS
+#    image: jenkins/jenkins:lts
+#    privileged: true
+#    user: root
+#    ports:
+#      - "50000:50000"
+#      - "8756:8080"
+#    volumes:
+#      - app_data:/var/jenkins_home
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - /usr/local/bin/docker:/usr/local/bin/docker
+
   redis-server:
     hostname: redis
     container_name: REDIS-SERVER
@@ -10,7 +23,6 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-
 
 #  postgres:
 #    container_name: POSTGRES
@@ -23,7 +35,7 @@ services:
 #      - "5432:5432"
 
   mysql:
-    container_name: mysql
+    container_name: MYSQL
     image: mysql:5.7
     restart: always
     environment:
@@ -36,13 +48,12 @@ services:
     expose:
       - 3366
     volumes:
-      - db_data:/var/lib/mysql
-      - micro_data:/var/lib/mysql
+      - app_data:/var/lib/mysql
       - ./deployment/db/init.sql:/data/application/init.sql
     command: --init-file /data/application/init.sql
 
   service-registry:
-    container_name: service-registry
+    container_name: SERVICE-REGISTRY
     build:
       context: ./service-registry
       dockerfile: Dockerfile
@@ -50,34 +61,31 @@ services:
       - "8761:8761"
 
   hystrix-dashboard:
-    container_name: hystrix-dashboard
+    container_name: HYSTRIX-DASHBOARD
     build:
       context: ./hystrix-dashboard
       dockerfile: Dockerfile
     environment:
       - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-      - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
     depends_on:
       - service-registry
     ports:
       - "9295:9295"
 
   cloud-config-server:
-    container_name: cloud-config-server
+    container_name: CLOUD-CONFIG-SERVER
     build:
       context: ./cloud-config-server
       dockerfile: Dockerfile
     environment:
       - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-
-      - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
     depends_on:
       - service-registry
     ports:
       - "9296:9296"
 
   cloud-gateway:
-    container_name: cloud-gateway
+    container_name: CLOUD-GATEWAY
     build:
       context: ./cloud-gateway
       dockerfile: Dockerfile
@@ -86,31 +94,24 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
 #      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-      - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
     depends_on:
       - service-registry
       - cloud-config-server
       - redis-server
     ports:
-      - "8080:5005"
-      - "8080:8080"
-      - "5005:5005"
+      - "8181:5005"
     expose:
-      - 8080
+      - 8181
     links:
       - "redis-server:redis"
 
   auth-server:
-    container_name: auth-server
+    container_name: AUTH-SERVER
     build:
       context: ./auth-server
       dockerfile: Dockerfile
     environment:
       - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-      - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
       - DB_URL=mysql
       - DB_USER=dbuser
       - DB_PASSWORD=dbpassword
@@ -126,52 +127,32 @@ services:
     links:
       - "redis-server:redis"
 
-  core-service:
-    container_name: CORE_SERVICE
-    build:
-      context: ./core-service
-      dockerfile: Dockerfile
-    environment:
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-      - DB_URL=mysql
-      - DB_USER=dbuser
-      - DB_PASSWORD=dbpassword
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-    depends_on:
-      - service-registry
-      - redis-server
-      - mysql
-    ports:
-      - "6651:5005"
-
   user-service:
-    container_name: user-service
+    container_name: USER-SERVICE
     build:
       context: ./user-service
       dockerfile: Dockerfile
     environment:
-      - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
+      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
     ports:
-      - "5057:5005"
+      - "6651:5005"
     depends_on:
       - service-registry
 
   department-service:
-    container_name: department-service
+    container_name: DEPARTMENT-SERVICE
     build:
       context: ./department-service
       dockerfile: Dockerfile
     environment:
-      - eureka.client.service-url.defaultZone=http://service-registry:8761/eureka/
+      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
     ports:
-      - "5058:5005"
+      - "6652:5005"
     depends_on:
       - service-registry
 
 volumes:
-  micro_data:
+  app_data:
     driver: local
 
 networks:
