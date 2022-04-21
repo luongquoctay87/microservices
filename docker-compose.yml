@@ -114,29 +114,26 @@ services:
     links:
       - "redis-server:redis"
 
-  user-service:
-    container_name: USER-SERVICE
+  core-service:
+    container_name: CORE_SERVICE
     build:
-      context: ./user-service
+      context: ./core-service
       dockerfile: Dockerfile
     environment:
       - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
+      - DB_URL=mysql
+      - DB_USER=dbuser
+      - DB_PASSWORD=dbpassword
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+    depends_on:
+      - service-registry
+      - redis-server
+      - mysql
     ports:
       - "6651:5005"
-    depends_on:
-      - service-registry
 
-  department-service:
-    container_name: DEPARTMENT-SERVICE
-    build:
-      context: ./department-service
-      dockerfile: Dockerfile
-    environment:
-      - eureka.client.service-url.defaultZone=http://SERVICE-REGISTRY:8761/eureka/
-    ports:
-      - "6652:5005"
-    depends_on:
-      - service-registry
 
 volumes:
   db_data:
