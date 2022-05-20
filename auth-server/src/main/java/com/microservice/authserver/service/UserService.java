@@ -25,8 +25,12 @@ public class UserService {
      * @return
      */
     public boolean isAuthenticated(String username, String password) {
-        User user = userRepository.findByUsername(username);
-        return encoder.matches(password, user.getPassword());
+        try {
+            User user = userRepository.findByUsername(username);
+            return encoder.matches(password, user.getPassword());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**

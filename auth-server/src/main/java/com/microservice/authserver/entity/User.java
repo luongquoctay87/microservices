@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "pa_users")
+@Table(name = "tbl_users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,9 +23,6 @@ public class User {
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "department_id")
-    private int departmentId;
 
     @Column(name = "created_date")
     private Date createdDate;

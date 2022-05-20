@@ -3,6 +3,8 @@ package com.microservice.authserver.controller;
 import com.google.gson.Gson;
 import com.microservice.authserver.entity.Activity;
 import com.microservice.authserver.entity.Token;
+import com.microservice.authserver.response.ApiResponse;
+import com.microservice.authserver.response.ErrorResponse;
 import com.microservice.authserver.service.TokenService;
 import com.microservice.authserver.service.UserService;
 import com.microservice.authserver.utils.JwtUtil;
@@ -32,7 +34,7 @@ public class AuthRestController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestParam("username") String _userName, @RequestParam("password") String _password) {
+    public ApiResponse login(@RequestParam("username") String _userName, @RequestParam("password") String _password) {
         log.info("Request POST /auth/login");
         if (userService.isAuthenticated(_userName, _password)) {
             String roles = userService.findAllRolesByUsername(_userName).stream()
@@ -51,9 +53,9 @@ public class AuthRestController {
             tokenService.saveToken(token.getToken(), APIs);
 
             log.info("Log in successful");
-            return new ResponseEntity<>(token, HttpStatus.OK);
+            return new ApiResponse(HttpStatus.OK.value(), "User is authenticated", token);
         }
         log.info("Log in fail !!");
-        return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Invalid username or password");
     }
 }

@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
             String url = request.getPath().toString();
 
             if (!request.getHeaders().containsKey("Authorization")) {
-                return error(response, HttpStatus.UNAUTHORIZED, "User is unauthenticated", url);
+                return error(response, HttpStatus.UNAUTHORIZED, "Access denied", url);
             }
 
             // get token and remove character "Bearer "
@@ -63,14 +63,14 @@ public class JwtAuthenticationFilter implements GatewayFilter {
                 exchange.getRequest().mutate().header("id", String.valueOf(claims.get("id"))).build();
             } catch (JwtTokenMalformedException | JwtTokenMissingException e) {
                 log.info("JWT format invalid !!");
-                return error(response, HttpStatus.UNAUTHORIZED, "User is unauthenticated", url);
+                return error(response, HttpStatus.UNAUTHORIZED, "Unauthenticated", url);
             }
 
             // compare with redis and authorize
-            String method = request.getMethod().toString();
-            if (!tokenService.isAuthorized(token, method, url)) {
-                return error(response, HttpStatus.FORBIDDEN, String.format("User can not access api: %s %s", method, url), url);
-            }
+//            String method = request.getMethod().toString();
+//            if (!tokenService.isAuthorized(token, method, url)) {
+//                return error(response, HttpStatus.FORBIDDEN, "Access denied", url);
+//            }
         }
 
         return chain.filter(exchange);
